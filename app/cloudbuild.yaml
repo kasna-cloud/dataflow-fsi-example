@@ -1,0 +1,123 @@
+steps:
+  - id: cancel-dataflow-jobs
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["-"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        gcloud dataflow jobs cancel $$(gcloud dataflow jobs list --format 'value(id)' --project $${PROJECT_ID} --region $${REGION} --status active) --project $${PROJECT_ID} --region $${REGION}
+        echo "Waiting for dataflow jobs to cancel..."
+        while gcloud dataflow jobs list --format 'value(state)' --project $${PROJECT_ID} --region $${REGION} --status active | grep -q "Running"; do sleep 1; done
+  - id: setup-prereq-resources
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["cancel-dataflow-jobs"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app
+        apt-get -y install gettext-base kubectl
+        gcloud container clusters get-credentials $${GKE_CLUSTER_NAME} --project $${PROJECT_ID} --region $${REGION}
+        kubectl create clusterrolebinding $${GKE_CLUSTER_NAME}-admin-binding --clusterrole cluster-admin --user $$(gcloud projects describe $${PROJECT_ID} --format 'value(projectNumber)')@cloudbuild.gserviceaccount.com
+        envsubst < kubernetes/prereq-resources.yaml | kubectl apply -f -
+  - id: deploy-generator
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["setup-prereq-resources"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app
+        apt-get -y install gettext-base kubectl
+        gcloud container clusters get-credentials $${GKE_CLUSTER_NAME} --project $${PROJECT_ID} --region $${REGION}
+        envsubst < kubernetes/generator-deployment.yaml | kubectl apply -f -
+  - id: deploy-grafana
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["setup-prereq-resources"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app
+        apt-get -y install gettext-base kubectl jq
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        gcloud container clusters get-credentials $${GKE_CLUSTER_NAME} --project $${PROJECT_ID} --region $${REGION}
+        helm repo add grafana https://grafana.github.io/helm-charts
+        helm repo update
+        envsubst '$${GRAFANA_USER},$${GRAFANA_PASSWORD},$${PROJECT_ID},$${SERVICE_ACCOUNT_GRAFANA_ACCOUNT_ID},$${REGION}' < grafana/values.yaml > grafana/values_envsubst.yaml
+        helm upgrade $${GRAFANA_NAME} grafana/grafana \
+          --install \
+          --namespace=$${GKE_NAMESPACE_GRAFANA_NAME} \
+          --values grafana/values_envsubst.yaml
+  - id: setup-training-cronjob
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["setup-prereq-resources"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app
+        apt-get -y install gettext-base kubectl
+        gcloud container clusters get-credentials $${GKE_CLUSTER_NAME} --project $${PROJECT_ID} --region $${REGION}
+        kubectl delete cronjob hourly-training
+        envsubst < kubernetes/training-cronjob.yaml | kubectl apply -f -
+  - id: start-metrics-pipeline
+    name: "gradle:6.3.0"
+    entrypoint: "bash"
+    waitFor: ["setup-prereq-resources"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app/java
+        gradle spotlessApply
+        gradle build
+        gradle run_forex_metrics_generator --args=" \
+          --enableStreamingEngine \
+          --experiments=min_num_workers=3 \
+          --gcpTempLocation=gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/$${GCS_TEMP_FOLDER} \
+          --inputPricesTopic=projects/$${PROJECT_ID}/topics/$${PUBSUB_PRICES_TOPIC} \
+          --jobName=metrics-generator \
+          --outputMetricsTopic=projects/$${PROJECT_ID}/topics/$${PUBSUB_METRICS_TOPIC} \
+          --project=$${PROJECT_ID} \
+          --region=$${REGION} \
+          --runner=DataflowRunner \
+          --stagingLocation=gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/$${GCS_STAGING_FOLDER} \
+          --TTLDurationSecs=$${METRICS_TYPE_1_MAX_GAP_SECS} \
+          --typeOneComputationsLengthInSecs=$${METRICS_TYPE_1_WINDOW_SECS} \
+          --typeTwoComputationsLengthInSecs=$${METRICS_TYPE_2_WINDOW_SECS} \
+          --workerMachineType=n1-highmem-2"
+  - id: start-dataflow-pipelines
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["setup-prereq-resources"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app
+        apt-get -y install gettext-base kubectl
+        gcloud container clusters get-credentials $${GKE_CLUSTER_NAME} --project $${PROJECT_ID} --region $${REGION}
+        kubectl delete job start-dataflow-pipelines
+        envsubst < kubernetes/dataflow-pipelines.yaml | kubectl apply -f -
+timeout: 3600s

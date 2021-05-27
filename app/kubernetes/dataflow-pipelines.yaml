@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: start-dataflow-pipelines
+  namespace: ${GKE_NAMESPACE_PIPELINE_NAME}
+spec:
+  template:
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}
+      restartPolicy: OnFailure
+      containers:
+        - name: start-pubsub-to-bigquery
+          image: gcr.io/${PROJECT_ID}/python:latest
+          args:
+            - pubsub_to_bigquery
+            - --job_name=pubsub-to-bigquery
+            - --mappings
+            - metrics::projects/${PROJECT_ID}/topics/${PUBSUB_METRICS_TOPIC}::${PROJECT_ID}:${BIGQUERY_DATASET_NAME}.${BIGQUERY_METRICS_TABLE_NAME}
+            - prices::projects/${PROJECT_ID}/topics/${PUBSUB_PRICES_TOPIC}::${PROJECT_ID}:${BIGQUERY_DATASET_NAME}.${BIGQUERY_PRICES_TABLE_NAME}
+            - reconerr::projects/${PROJECT_ID}/topics/${PUBSUB_RECONERR_TOPIC}::${PROJECT_ID}:${BIGQUERY_DATASET_NAME}.${BIGQUERY_RECONERR_TABLE_NAME}
+            - --project=${PROJECT_ID}
+            - --region=${REGION}
+            - --runner=DataflowRunner
+            - --setup_file=./setup.py
+            - --staging_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_STAGING_FOLDER}
+            - --temp_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TEMP_FOLDER}
+        - name: start-inference
+          image: gcr.io/${PROJECT_ID}/python:latest
+          args:
+            - inference
+            - --input_metrics=projects/${PROJECT_ID}/topics/${PUBSUB_METRICS_TOPIC}
+            - --job_name=inference
+            - --output_alerts=projects/${PROJECT_ID}/topics/${PUBSUB_RECONERR_TOPIC}
+            - --project=${PROJECT_ID}
+            - --region=${REGION}
+            - --runner=DataflowRunner
+            - --setup_file=./setup.py
+            - --staging_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_STAGING_FOLDER}
+            - --symbol=${SYMBOL_TO_RUN_LSTM_ON}
+            - --temp_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TEMP_FOLDER}
+            - --window_length=${LSTM_WINDOW_LENGTH}
+            - --rsi_lower_threshold=${RSI_LOWER_THRESHOLD}
+            - --rsi_upper_threshold=${RSI_UPPER_THRESHOLD}

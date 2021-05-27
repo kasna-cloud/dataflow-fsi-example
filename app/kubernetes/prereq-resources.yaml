@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${GKE_NAMESPACE_GRAFANA_NAME}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${GKE_NAMESPACE_PIPELINE_NAME}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: ${GKE_NAMESPACE_PIPELINE_NAME}
+  name: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}
+  annotations:
+    iam.gke.io/gcp-service-account: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com

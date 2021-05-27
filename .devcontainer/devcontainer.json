@@ -1,0 +1,18 @@
+{
+	"build": {
+		"args": {
+			"VARIANT": "focal"
+		},
+		"dockerfile": "Dockerfile"
+	},
+	"extensions": [
+		"vscjava.vscode-java-pack",
+		"eamodio.gitlens",
+		"ms-python.python"
+	],
+	"name": "Ubuntu",
+	"remoteUser": "vscode",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	}
+}

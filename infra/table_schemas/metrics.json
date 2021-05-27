@@ -1,0 +1,116 @@
+[
+    {
+        "name": "symbol",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "endTimestamp",
+        "type": "STRING"
+    },
+    {
+        "name": "MIN",
+        "type": "FLOAT"
+    },
+    {
+        "name": "MAX",
+        "type": "FLOAT"
+    },
+    {
+        "name": "FIRST",
+        "type": "FLOAT"
+    },
+    {
+        "name": "LAST",
+        "type": "FLOAT"
+    },
+    {
+        "name": "FIRST_TIMESTAMP",
+        "type": "INTEGER"
+    },
+    {
+        "name": "LAST_TIMESTAMP",
+        "type": "INTEGER"
+    },
+    {
+        "name": "DATA_POINT_COUNT",
+        "type": "INTEGER"
+    },
+    {
+        "name": "SUM",
+        "type": "FLOAT"
+    },
+    {
+        "name": "SUM_MOVEMENT_COUNT",
+        "type": "INTEGER"
+    },
+    {
+        "name": "SUM_UP_MOVEMENT",
+        "type": "FLOAT"
+    },
+    {
+        "name": "SUM_DOWN_MOVEMENT",
+        "type": "FLOAT"
+    },
+    {
+        "name": "STANDARD_DEVIATION",
+        "type": "FLOAT"
+    },
+    {
+        "name": "SIMPLE_MOVING_AVERAGE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "ABS_MOVING_AVERAGE_GAIN",
+        "type": "FLOAT"
+    },
+    {
+        "name": "ABS_MOVING_AVERAGE_LOSS",
+        "type": "FLOAT"
+    },
+    {
+        "name": "EXPONENTIAL_MOVING_AVERAGE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "LOG_RTN",
+        "type": "FLOAT"
+    },
+    {
+        "name": "RELATIVE_STRENGTH",
+        "type": "FLOAT"
+    },
+    {
+        "name": "RELATIVE_STRENGTH_INDICATOR",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_UPPER_BAND_EMA",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_UPPER_BAND_SMA",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_MIDDLE_BAND_EMA",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_MIDDLE_BAND_SMA",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_BOTTOM_BAND_EMA",
+        "type": "FLOAT"
+    },
+    {
+        "name": "BB_BOTTOM_BAND_SMA",
+        "type": "FLOAT"
+    }
+]

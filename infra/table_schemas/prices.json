@@ -1,0 +1,16 @@
+[
+    {
+        "name": "symbol",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "timestamp",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "value",
+        "type": "FLOAT"
+    }
+]

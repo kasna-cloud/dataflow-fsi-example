@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-generator
+  namespace: ${GKE_NAMESPACE_PIPELINE_NAME}
+  labels:
+    app: price-generator
+spec:
+  selector:
+    matchLabels:
+      app: price-generator
+  template:
+    metadata:
+      labels:
+        app: price-generator
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}
+      containers:
+        - name: generator
+          image: gcr.io/${PROJECT_ID}/python:latest
+          args:
+            - generator
+            - --output_prices_topic=projects/${PROJECT_ID}/topics/${PUBSUB_PRICES_TOPIC}
+            - --tick_hz=${GENERATOR_TICK_HZ}
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2048Mi
+            requests:
+              cpu: 2000m
+              memory: 2048Mi

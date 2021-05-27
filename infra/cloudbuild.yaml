@@ -1,0 +1,70 @@
+steps:
+  - id: create-terraform-state-bucket
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["-"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        gsutil ls gs://$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET} || gsutil mb -p $${PROJECT_ID} gs://$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET}
+  - id: build-python-container
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["-"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app/python
+        gcloud builds submit --timeout=3600s --tag gcr.io/$${PROJECT_ID}/python
+  - id: terraform-init
+    name: "hashicorp/terraform:latest"
+    entrypoint: "sh"
+    waitFor: ["create-terraform-state-bucket"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        . config.sh
+        cd infra
+        sed -i "s/BUCKET/$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET}/g" backend.tf
+        terraform init
+  - id: terraform-apply
+    name: "hashicorp/terraform:latest"
+    entrypoint: "sh"
+    waitFor: ["terraform-init"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        . config.sh
+        cd infra
+        sed -i "s/BUCKET/$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET}/g" backend.tf
+        terraform apply -auto-approve
+  - id: bootstrap-GBPAUD-model
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["terraform-apply"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        . config.sh
+        gsutil cp -r app/bootstrap_models/GBPAUD gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/initial_bootstrap_models/GBPAUD
+        gcloud ai-platform models create autoencoderGBPAUD --regions=$${AI_PLATFORM_MODEL_REGION}
+        gcloud ai-platform versions create initial_pretrained \
+          --model=autoencoderGBPAUD \
+          --region=global \
+          --origin="gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/initial_bootstrap_models/GBPAUD" \
+          --runtime-version=2.4 \
+          --framework=TENSORFLOW \
+          --python-version=3.7
+timeout: 3600s

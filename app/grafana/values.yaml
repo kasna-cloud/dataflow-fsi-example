@@ -1,0 +1,2774 @@
+adminPassword: ${GRAFANA_PASSWORD}
+adminUser: ${GRAFANA_USER}
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - folder: ""
+        name: default
+        options:
+          path: /var/lib/grafana/dashboards/default
+dashboards:
+  default:
+    fsi-pattern:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": "-- Grafana --",
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "gnetId": null,
+          "graphTooltip": 0,
+          "iteration": 1621846746001,
+          "links": [],
+          "panels": [
+            {
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": null,
+                    "displayMode": "auto",
+                    "filterable": false
+                  },
+                  "decimals": 5,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "timestamp"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 489
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "symbol"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 101
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "value"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 98
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 18,
+                "w": 10,
+                "x": 0,
+                "y": 0
+              },
+              "id": 28,
+              "interval": null,
+              "maxDataPoints": null,
+              "options": {
+                "showHeader": true,
+                "sortBy": [
+                  {
+                    "desc": true,
+                    "displayName": "timestamp"
+                  }
+                ]
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "table",
+                  "group": [
+                    {
+                      "params": [
+                        "symbol"
+                      ],
+                      "type": "column"
+                    }
+                  ],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "2",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "queryType": "randomWalk",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp, symbol, value, FROM (\n  SELECT timestamp, symbol, value, RANK() OVER (PARTITION BY symbol ORDER BY timestamp DESC) dest_rank\n  FROM ${PROJECT_ID}.forex.prices\n  ) WHERE dest_rank = 1",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      },
+                      {
+                        "params": [
+                          "avg"
+                        ],
+                        "type": "aggregate"
+                      },
+                      {
+                        "params": [
+                          "Price"
+                        ],
+                        "type": "alias"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": []
+                }
+              ],
+              "title": "Live Prices of Foreign Exchange",
+              "type": "table"
+            },
+            {
+              "collapsed": false,
+              "datasource": null,
+              "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 18
+              },
+              "id": 14,
+              "panels": [],
+              "title": "Gap Filling for CADJPY",
+              "type": "row"
+            },
+            {
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 3,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "spanNulls": false
+                  },
+                  "decimals": 4,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 12,
+                "w": 24,
+                "x": 0,
+                "y": 19
+              },
+              "id": 16,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "CADJPY tick data",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"CADJPY\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "CADJPY SMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "SIMPLE_MOVING_AVERAGE"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"CADJPY\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "title": "CADJPY - Tick Value vs Simple Moving Average",
+              "type": "timeseries"
+            },
+            {
+              "collapsed": false,
+              "datasource": null,
+              "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 31
+              },
+              "id": 10,
+              "panels": [],
+              "title": "Metrics",
+              "type": "row"
+            },
+            {
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "decimals": 4,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 32
+              },
+              "id": 8,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  timestamp,\n  SIMPLE_MOVING_AVERAGE\nFROM\n  ${PROJECT_ID}.forex.metrics\nWHERE\n  $__timeFilter(timestamp)\n  AND symbol=\"$currency_pair\"\nORDER BY timestamp ASC\n",
+                  "refId": "SMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "SIMPLE_MOVING_AVERAGE"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick value",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Simple Moving Average",
+              "type": "timeseries"
+            },
+            {
+              "datasource": null,
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "decimals": 4,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 32
+              },
+              "id": 17,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "EMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "EXPONENTIAL_MOVING_AVERAGE"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick value",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Exponential Moving Average",
+              "type": "timeseries"
+            },
+            {
+              "datasource": null,
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "displayName": "Log Returns",
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 40
+              },
+              "id": 18,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Log returns",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "LOG_RTN"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Log Returns",
+              "type": "timeseries"
+            },
+            {
+              "datasource": null,
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "decimals": 1,
+                  "displayName": "Relative Strength Indicator",
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 40
+              },
+              "id": 19,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "RSI",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Relative Strength Indicator",
+              "type": "timeseries"
+            },
+            {
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "decimals": 4,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 48
+              },
+              "id": 20,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "BB SMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "BB_BOTTOM_BAND_SMA"
+                        ],
+                        "type": "column"
+                      }
+                    ],
+                    [
+                      {
+                        "params": [
+                          "BB_UPPER_BAND_SMA"
+                        ],
+                        "type": "column"
+                      }
+                    ],
+                    [
+                      {
+                        "params": [
+                          "BB_MIDDLE_BAND_SMA"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick value",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Bollinger Bands (SMA)",
+              "type": "timeseries"
+            },
+            {
+              "datasource": null,
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "graph": false,
+                      "legend": false,
+                      "tooltip": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "spanNulls": true
+                  },
+                  "decimals": 4,
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 48
+              },
+              "id": 21,
+              "interval": null,
+              "maxDataPoints": 90000,
+              "options": {
+                "graph": {},
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom"
+                },
+                "tooltipOptions": {
+                  "mode": "single"
+                }
+              },
+              "pluginVersion": "7.5.5",
+              "targets": [
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "BB EMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "BB_BOTTOM_BAND_EMA"
+                        ],
+                        "type": "column"
+                      }
+                    ],
+                    [
+                      {
+                        "params": [
+                          "BB_UPPER_BAND_EMA"
+                        ],
+                        "type": "column"
+                      }
+                    ],
+                    [
+                      {
+                        "params": [
+                          "BB_MIDDLE_BAND_EMA"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick value",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Bollinger Bands (EMA)",
+              "type": "timeseries"
+            },
+            {
+              "collapsed": false,
+              "datasource": null,
+              "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 56
+              },
+              "id": 6,
+              "panels": [],
+              "title": "Model",
+              "type": "row"
+            },
+            {
+              "aliasColors": {
+                "RSI_condition": "green",
+                "anomaly": "semi-dark-red",
+                "value": "blue"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 0,
+                "y": 57
+              },
+              "hiddenSeries": false,
+              "id": 2,
+              "interval": null,
+              "legend": {
+                "alignAsTable": false,
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "rightSide": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 1200000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:7239",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:2720",
+                  "alias": "RSI_condition",
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick data",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 OR RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS RSI_condition\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Tick value vs RSI condition vs Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:4822",
+                  "decimals": 4,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:4823",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 12,
+                "y": 57
+              },
+              "hiddenSeries": false,
+              "id": 29,
+              "interval": null,
+              "legend": {
+                "alignAsTable": false,
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "rightSide": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 1200000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:7239",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Tick data",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "value"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "prices",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Tick value with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:4822",
+                  "decimals": 4,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:4823",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 0,
+                "y": 66
+              },
+              "hiddenSeries": false,
+              "id": 22,
+              "interval": null,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 30000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:7833",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "SMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "SIMPLE_MOVING_AVERAGE"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon err",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "timeColumn": "-- time --",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Simple Moving Average with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:7700",
+                  "decimals": 4,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:7701",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 12,
+                "y": 66
+              },
+              "hiddenSeries": false,
+              "id": 23,
+              "interval": null,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 30000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:8096",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "EMA",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "EXPONENTIAL_MOVING_AVERAGE"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon err",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "timeColumn": "-- time --",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Exponential Moving Average with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:8068",
+                  "decimals": 4,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:8069",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 0,
+                "y": 75
+              },
+              "hiddenSeries": false,
+              "id": 25,
+              "interval": null,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 30000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:8755",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Log returns",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "LOG_RTN"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon err",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "timeColumn": "-- time --",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Log returns with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:8727",
+                  "format": "short",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:8728",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 12,
+                "y": 75
+              },
+              "hiddenSeries": false,
+              "id": 24,
+              "interval": null,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 30000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:8360",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "Std dev",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "STANDARD_DEVIATION"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon err",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "timeColumn": "-- time --",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Standard Deviation with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:8227",
+                  "format": "short",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:8228",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            },
+            {
+              "aliasColors": {
+                "anomaly": "semi-dark-red"
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": null,
+              "description": "",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "fill": 1,
+              "fillGradient": 0,
+              "gridPos": {
+                "h": 9,
+                "w": 12,
+                "x": 0,
+                "y": 84
+              },
+              "hiddenSeries": false,
+              "id": 26,
+              "interval": null,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "maxDataPoints": 30000,
+              "nullPointMode": "null",
+              "options": {
+                "alertThreshold": true
+              },
+              "percentage": false,
+              "pluginVersion": "7.5.5",
+              "pointradius": 2,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+                {
+                  "$$hashKey": "object:1513",
+                  "alias": "anomaly",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                }
+              ],
+              "spaceLength": 10,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "convertToUTC": false,
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": false,
+                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
+                  "refId": "RSI",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"$model_currency_pair\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
+                },
+                {
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon err",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "timeColumn": "-- time --",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                }
+              ],
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "Relative Strength Indicator with Anomalies",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+              },
+              "yaxes": [
+                {
+                  "$$hashKey": "object:5599",
+                  "decimals": 1,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "100",
+                  "min": "0",
+                  "show": true
+                },
+                {
+                  "$$hashKey": "object:5600",
+                  "decimals": 0,
+                  "format": "short",
+                  "label": "",
+                  "logBase": 1,
+                  "max": "1",
+                  "min": "0",
+                  "show": true
+                }
+              ],
+              "yaxis": {
+                "align": false,
+                "alignLevel": null
+              }
+            }
+          ],
+          "refresh": "1m",
+          "schemaVersion": 27,
+          "style": "dark",
+          "tags": [],
+          "templating": {
+            "list": [
+              {
+                "allValue": null,
+                "current": {
+                  "selected": false,
+                  "text": "AUDUSD",
+                  "value": "AUDUSD"
+                },
+                "datasource": null,
+                "definition": "select distinct symbol from ${PROJECT_ID}.forex.metrics",
+                "description": "Choose the currency pair you would like to view in the Metrics section below",
+                "error": null,
+                "hide": 0,
+                "includeAll": false,
+                "label": "Metric's Currency Pair",
+                "multi": false,
+                "name": "currency_pair",
+                "options": [],
+                "query": "select distinct symbol from ${PROJECT_ID}.forex.metrics",
+                "refresh": 2,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+              },
+              {
+                "current": {
+                  "selected": false,
+                  "text": "72",
+                  "value": "72"
+                },
+                "description": "Choose the threshold on the anomaly detection model's reconstruction error",
+                "error": null,
+                "hide": 0,
+                "label": "Model Threshold",
+                "name": "model_threshold",
+                "options": [
+                  {
+                    "selected": true,
+                    "text": "72",
+                    "value": "72"
+                  }
+                ],
+                "query": "72",
+                "skipUrlSync": false,
+                "type": "textbox"
+              },
+              {
+                "allValue": null,
+                "current": {
+                  "selected": false,
+                  "text": "GBPAUD",
+                  "value": "GBPAUD"
+                },
+                "datasource": null,
+                "definition": "select distinct symbol from ${PROJECT_ID}.forex.metrics",
+                "description": "Choose the currency pair you would like to view in the Model section below",
+                "error": null,
+                "hide": 0,
+                "includeAll": false,
+                "label": "Model's Currency Pair",
+                "multi": false,
+                "name": "model_currency_pair",
+                "options": [],
+                "query": "select distinct symbol from ${PROJECT_ID}.forex.metrics",
+                "refresh": 2,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+              }
+            ]
+          },
+          "time": {
+            "from": "now-1h",
+            "to": "now-5m"
+          },
+          "timepicker": {},
+          "timezone": "utc",
+          "title": "FSI Pattern",
+          "uid": "9HXuXojGk",
+          "version": 1
+        }
+grafana.ini:
+  plugins:
+    allow_loading_unsigned_plugins: doitintl-bigquery-datasource
+ingress:
+  enabled: true
+  hosts: []
+  path: /*
+plugins:
+  - https://github.com/doitintl/bigquery-grafana/archive/2.0.2.zip;doit-bigquery-datasource
+serviceAccount:
+  annotations: 
+    iam.gke.io/gcp-service-account: ${SERVICE_ACCOUNT_GRAFANA_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
+  name: ${SERVICE_ACCOUNT_GRAFANA_ACCOUNT_ID}
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Google BigQuery
+      type: doitintl-bigquery-datasource
+      access: proxy
+      isDefault: true
+      jsonData:
+        authenticationType: gce
+        defaultProject: ${PROJECT_ID}
+        processingLocation: ${REGION}
+      version: 2
+      readOnly: false

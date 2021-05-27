@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hourly-training
+  namespace: ${GKE_NAMESPACE_PIPELINE_NAME}
+spec:
+  schedule: "0 */2 * * *" # Every 2 hours
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}
+          containers:
+            - name: cloud-sql-proxy
+              image: gcr.io/cloudsql-docker/gce-proxy:1.19.1
+              command:
+                - /cloud_sql_proxy
+                - -instances=${PROJECT_ID}:${REGION}:${SQL_DATABASE_INSTANCE_NAME}=tcp:3306
+            - name: trainer
+              image: gcr.io/${PROJECT_ID}/python:latest
+              args:
+                - training
+                - --setup_file=./setup.py
+                - --job_name=training
+                - --project=${PROJECT_ID}
+                - --region=${REGION}
+                - --runner=DataflowRunner
+                - --staging_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_STAGING_FOLDER}
+                - --symbol=${SYMBOL_TO_RUN_LSTM_ON}
+                - --temp_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TEMP_FOLDER}
+                - --tfx_metadata_sql_database=${SQL_ML_METADATA_DATABASE}
+                - --tfx_metadata_sql_username=${SQL_ML_METADATA_USER}
+                - --tfx_root_dir=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TFX_FOLDER}
+                - --window_length=${LSTM_WINDOW_LENGTH}
+                - --ai_platform_model_region=${AI_PLATFORM_MODEL_REGION}
+                - --rsi_lower_threshold=${RSI_LOWER_THRESHOLD}
+                - --rsi_upper_threshold=${RSI_UPPER_THRESHOLD}
+                # - --service_account_email=${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
+          restartPolicy: OnFailure
