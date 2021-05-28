@@ -36,5 +36,5 @@ spec:
                 - --ai_platform_model_region=${AI_PLATFORM_MODEL_REGION}
                 - --rsi_lower_threshold=${RSI_LOWER_THRESHOLD}
                 - --rsi_upper_threshold=${RSI_UPPER_THRESHOLD}
-                # - --service_account_email=${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
+                - --service_account_email=${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com
           restartPolicy: OnFailure
