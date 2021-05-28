@@ -1,10 +1,10 @@
 # TSFlow RSI Example
 
-This project is an example of how to detect anomalies in financial technical indicators by modeling their expected distribution, and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be useful to understand when it is reliable or not. This is achieved using realistic foreign exchange market data and leverages Google Cloud Platform and the TSFlow library. 
+This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This is achieved using realistic foreign exchange market data and leverages Google Cloud Platform and the TSFlow library. 
 
-The TSFlow library is a fast, flexible library for processing time series data -- particularly for financial market data due to its large volume. Its ability to perform the data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain.
+The TSFlow library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain.
 
-This example uses GCP infrastructure including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform.
+This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform.
 
 ## Quickstart
 
@@ -30,7 +30,7 @@ The rule of thumb regarding RSI is:
 When RSI for an asset is less than 30, traders should buy this asset as the price is expected to increase in the near future.
 When RSI for an asset is greater than 70, traders should sell this asset as the price is expected to decrease in the near future.
 
-As this is a rule of thumb, this strategy cannot be trusted to work favorably at all times. Therefore in these instances (i.e. RSI > 70 or RSI < 30), it would be useful to know if RSI is a reliable indicator to inform a trade or not.
+As this is a rule of thumb, this strategy cannot be trusted to work favourably at all times. Therefore in these instances (i.e. RSI > 70 or RSI < 30), it would be useful to know if RSI is a reliable indicator to inform a trade or not.
 
 We propose, for a given asset, that RSI is a reliable indicator when metrics describing the same asset (e.g. log returns) are behaving as they usually do when RSI > 70 or RSI < 30. And therefore, RSI is unreliable to inform a trade when these metrics are behaving anomalously.
 
@@ -59,9 +59,15 @@ This repo is organised into folders containing logical functions of the example.
 
 ## Components 
 
+This example can be thought of in two distinct, logical functions. One for real-time ingestion of prices and determination of RSI presence, and another for the re-training of the model to improve prediction.
+
+The logical diagram for the real-time flow through the GCP components is below.
+
 ![Real-time](docs/TSFlow-RSI-Example-Real-time.png)
 
-![Re-training](docs/FSI Time-Series Pattern-Re-training.png)
+The logical re-training flow is in the following diagram.
+
+![Re-training](docs/TSFlow-RSI-Example-Re-training.png)
 
 ### Storage Components
 * Three PubSub Topics: prices, metrics, and reconerr
