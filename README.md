@@ -8,19 +8,19 @@ This example uses GCP infrastructure including Dataflow, Pub/Sub, BigQuery, Kube
 
 ## Quickstart
 
-### On a laptop (Mac or Linux or WSL)
+**On a laptop (Mac or Linux or WSL)**
 To get running quickly,
-Create a new project in GCP
-Install `gcloud` and set PROJECT_ID
-Run the `deploy-infra.sh` to create base infrastructure, this will take 5-10mins
-Run the `run-app.sh` to deploy the pipelines and model, this will take 5mins
-View the grafana dashboard
+1. Create a new project in GCP
+1. Install `gcloud` and set PROJECT_ID
+1. Run the `deploy-infra.sh` to create base infrastructure, this will take 5-10mins
+1. Run the `run-app.sh` to deploy the pipelines and model, this will take 5mins
+1. View the grafana dashboard
 
-### Run on Cloud Shell
+**Run on Cloud Shell**
 You can also run this example using Cloud Shell. To begin, login to the GCP console and select the “Activate Cloud Shell” icon in the top right of your project dashboard. Then run the following:
-Clone the repo: `git clone https://github.com/kasna-cloud/google-fsi-pattern.git && cd google-fsi-pattern`
-Run the infrastructure deployment: `./deploy-infra.sh`, this will take 5-10mins
-Run the pipeline deployment: `./run-app.sh`, this will take 5mins
+1. Clone the repo: `git clone https://github.com/kasna-cloud/tsflow-rsi-example.git && cd tsflow-rsi-example`
+1. Run the infrastructure deployment: `./deploy-infra.sh`, this will take 5-10mins
+1. Run the pipeline deployment: `./run-app.sh`, this will take 5mins
 
 ## Problem Domain 
 
@@ -45,22 +45,30 @@ The key design principles used in the creation of this example are:
 
 ## Repo
 This repo is organised into folders containing logical functions of the example. A brief description of these are below:
-- `app/bootstrap_models` is the LSTM model pre-populated with the example so that dashboards can immediately render RSI values. This model is updated by the re-training data pipeline.
-- `app/grafana` contains visualization configuration
-- `app/java` holds the Dataflow pipeline code using the TSFlow library. This pipeline creates metrics from the prices stream.
-- `app/kubernetes` has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
-- `app/python` is a containerized python program for:
+- **app/bootstrap_models** is the LSTM model pre-populated with the example so that dashboards can immediately render RSI values. This model is updated by the re-training data pipeline.
+- **app/grafana** contains visualization configuration
+- **app/java** holds the Dataflow pipeline code using the TSFlow library. This pipeline creates metrics from the prices stream.
+- **app/kubernetes** has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
+- **app/python** is a containerized python program for:
     - inference and retraining pipelines
     - pubsub to bigquery pipeline 
     - forex generator to create realistic prices
-- `docs` folder contains further example information and diagrams
-- `infra` contains the cloudbuild and terraform code to deploy the example GCP infrastructure
-- `notebooks` folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
+- **docs** folder contains further example information and diagrams
+- **infra** contains the cloudbuild and terraform code to deploy the example GCP infrastructure
+- **notebooks** folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
 
 ## Components 
+
+![Real-time](docs/TSFlow-RSI-Example-Real-time.png)
+
+![Re-training](docs/FSI Time-Series Pattern-Re-training.png)
+
 ### Storage Components
 * Three PubSub Topics: prices, metrics, and reconerr
-* One BigQuery Dataset with 3 Tables: prices, metrics, and reconerr
+* One BigQuery Dataset with 3 Tables: 
+    * prices
+    * metrics
+    * reconerr
 * One AI Platform Model
 * One Cloud SQL Database for ML Metadata
 
@@ -81,7 +89,7 @@ This example is deployed in two steps:
 1. infrastructure into GCP by CloudBuild and terraform
 2. application and pipeline deployment using CloudBuild
 
-Both of these CloudBuild steps can be triggered using the `deploy-infra.sh` and `run-app.sh` scripts and require only a `gcloud` Google Cloud SDK to be installed locally.
+Both of these CloudBuild steps can be triggered using the `deploy-infra.sh` and `run-app.sh` scripts and require only a [gcloud](https://cloud.google.com/sdk) Google Cloud SDK to be installed locally.
 
 If needed, this example can be run using GCP Cloud Shell. Please refer to the Quickstart section for further information.
 
