@@ -38,6 +38,7 @@ spec:
             - --staging_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_STAGING_FOLDER}
             - --symbol=${SYMBOL_TO_RUN_LSTM_ON}
             - --temp_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TEMP_FOLDER}
+            - --bootstrap_model_gs_prefix=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/initial_bootstrap_models
             - --window_length=${LSTM_WINDOW_LENGTH}
             - --rsi_lower_threshold=${RSI_LOWER_THRESHOLD}
             - --rsi_upper_threshold=${RSI_UPPER_THRESHOLD}

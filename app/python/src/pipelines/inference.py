@@ -34,6 +34,10 @@ def setup_parser(parser):
 		required=True,
 		type=int,
 		help="Length of window to input into model inference."
+	),
+	parser.add_argument(
+		'--bootstrap_model_gs_prefix',
+		help="Location of pretrained bootstrap models in gs. Pipeline will only bootstrap a model if this argument is given, an existing model in ai platform does not already exist, and the symbol is GBPAUD"
 	)
 	parser.add_argument(
 		'--timestamp_key',
@@ -64,6 +68,24 @@ def ai_platform_model_exists(project_id: str, model_name: str):
 	existing_model_names = [m['name'] for m in response['models']]
 	return full_model_name in existing_model_names
 
+def bootstrap_initial_ai_platform_model(project_id: str, model_name: str, gs_bootstrap_model_dir: str):
+	project_prefix = f"projects/{project_id}"
+	model_prefix = f"{project_prefix}/models/{model_name}"
+	ml = discovery.build('ml','v1')
+	model_create_request = ml.projects().models().create(parent=project_prefix, body={
+		'name': model_name
+	})
+	model_create_request.execute()
+
+	version_create_request = ml.projects().models().versions().create(parent=model_prefix, body={
+		'name': 'initial_pretrained_bootstrap_model',
+		'runtimeVersion': '2.4',
+		'framework': "TENSORFLOW",
+		'pythonVersion': '3.7',
+		'deploymentUri': gs_bootstrap_model_dir,
+	})
+	version_create_request.execute()
+
 
 def run_pipeline(
 	pipeline_options: PipelineOptions,
@@ -71,6 +93,7 @@ def run_pipeline(
 	output_alerts: str,
 	symbol: str,
 	window_length: int,
+	bootstrap_model_gs_prefix: str,
 	timestamp_key: str,
 	rsi_lower_threshold: float,
 	rsi_upper_threshold: float,
@@ -93,7 +116,18 @@ def run_pipeline(
 	# the beam pipeline. This will cause the job to fail in GKE and kubernetes will automatically retry
 	# the job until the model exists.
 	if not ai_platform_model_exists(project_id=gcp_project_id, model_name=model_name):
-		raise ValueError("Model does not yet exist in Ai Platform - short circuiting.")
+		logging.warn("Model does yet not exist in Ai platform")
+		if bootstrap_model_gs_prefix is not None and symbol == 'GBPAUD':
+			# We have a pre-trained model for GBPAUD to speed up initial deployment, so deploy that:
+			logging.warn("Deploying initial pretrained bootstrap model")
+			bootstrap_initial_ai_platform_model(
+				project_id=gcp_project_id,
+				model_name=model_name,
+				gs_bootstrap_model_dir=f"{bootstrap_model_gs_prefix}/{symbol}"
+			)
+		else:
+			logging.error("Not configured to bootstrap initial model, exiting with error to prompt k8s to retry later. This is expected if you are running with a symbol!=GBPAUD, the training pipeline will need to complete successfully before inference can begin.")
+			raise ValueError("Model does not yet exist in Ai Platform - short circuiting.")
 
 	def calc_reconstruction_err(prediction_output):
 		error = 0
