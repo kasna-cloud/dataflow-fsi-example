@@ -13,38 +13,57 @@ from tfx_bsl.tfxio import dataset_options
 
 class LSTMAutoencoderModel(keras.Model):
     def __init__(
-            self,
-            input_features: List[str],
-            timesteps: int,
-            outer_units: int,
-            inner_units: int,
+        self,
+        input_features: List[str],
+        timesteps: int,
+        outer_units: int,
+        inner_units: int,
     ):
         super(LSTMAutoencoderModel, self).__init__()
         self.encoded_features = input_features
-        self.encoder = self._build_encoder(input_features, timesteps, outer_units, inner_units)
-        self.decoder = self._build_decoder(input_features, timesteps, outer_units, inner_units)
+        self.encoder = self._build_encoder(
+            input_features, timesteps, outer_units, inner_units
+        )
+        self.decoder = self._build_decoder(
+            input_features, timesteps, outer_units, inner_units
+        )
 
     def _build_encoder(self, input_features, timesteps, outer_units, inner_units):
-        inputs = [layers.Input(name=f, shape=(timesteps, 1))
-                  for f in input_features]
+        inputs = [layers.Input(name=f, shape=(timesteps, 1)) for f in input_features]
         input_concat = layers.Concatenate()(inputs)
-        outer_lstm = layers.LSTM(outer_units, activation='selu',
-                                 recurrent_dropout=0.05, return_sequences=True,
-                                 kernel_initializer='he_uniform')(input_concat)
+        outer_lstm = layers.LSTM(
+            outer_units,
+            activation="selu",
+            recurrent_dropout=0.05,
+            return_sequences=True,
+            kernel_initializer="he_uniform",
+        )(input_concat)
         outer_bn = layers.BatchNormalization()(outer_lstm)
-        inner_lstm = layers.LSTM(inner_units, activation='selu', return_sequences=False,
-                                 kernel_initializer='he_uniform')(outer_bn)
+        inner_lstm = layers.LSTM(
+            inner_units,
+            activation="selu",
+            return_sequences=False,
+            kernel_initializer="he_uniform",
+        )(outer_bn)
         inner_bn = layers.BatchNormalization()(inner_lstm)
         return keras.Model(name="encoder", inputs=inputs, outputs=inner_bn)
 
     def _build_decoder(self, input_features, timesteps, outer_units, inner_units):
         _input = layers.Input(shape=(inner_units))
         input_repeated = layers.RepeatVector(timesteps)(_input)
-        inner_lstm = layers.LSTM(inner_units, activation='selu', return_sequences=True,
-                                 kernel_initializer='he_uniform')(input_repeated)
+        inner_lstm = layers.LSTM(
+            inner_units,
+            activation="selu",
+            return_sequences=True,
+            kernel_initializer="he_uniform",
+        )(input_repeated)
         inner_bn = layers.BatchNormalization()(inner_lstm)
-        outer_lstm = layers.LSTM(outer_units, activation='selu', return_sequences=True,
-                                 kernel_initializer='he_uniform')(inner_bn)
+        outer_lstm = layers.LSTM(
+            outer_units,
+            activation="selu",
+            return_sequences=True,
+            kernel_initializer="he_uniform",
+        )(inner_bn)
         outer_bn = layers.BatchNormalization()(outer_lstm)
         outputs = [
             layers.TimeDistributed(layers.Dense(1), name=f)(outer_bn)
@@ -69,10 +88,10 @@ class LSTMAutoencoderModel(keras.Model):
 
 
 def build_model(
-        input_features: List[str],
-        timesteps: int,
-        outer_units: int,
-        inner_units: int,
+    input_features: List[str],
+    timesteps: int,
+    outer_units: int,
+    inner_units: int,
 ) -> keras.Model:
     model = LSTMAutoencoderModel(
         input_features,
@@ -80,9 +99,7 @@ def build_model(
         outer_units,
         inner_units,
     )
-    model.compile(
-        optimizer=keras.optimizers.Adam()
-    )
+    model.compile(optimizer=keras.optimizers.Adam())
 
     model.encoder.summary(print_fn=absl.logging.info)
     model.decoder.summary(print_fn=absl.logging.info)
@@ -106,30 +123,30 @@ def run_fn(fn_args: TrainerFnArgs):
     train_dataset = fn_args.data_accessor.tf_dataset_factory(
         fn_args.train_files,
         dataset_options.TensorFlowDatasetOptions(
-            batch_size=fn_args.custom_config['batch_size'],
+            batch_size=fn_args.custom_config["batch_size"],
         ),
         tf_transform_output.transformed_metadata.schema,
     )
     eval_dataset = fn_args.data_accessor.tf_dataset_factory(
         fn_args.eval_files,
         dataset_options.TensorFlowDatasetOptions(
-            batch_size=fn_args.custom_config['batch_size'],
+            batch_size=fn_args.custom_config["batch_size"],
         ),
         tf_transform_output.transformed_metadata.schema,
     )
 
     # instantiate model
     model = build_model(
-        fn_args.custom_config['input_features'],
-        fn_args.custom_config['window_size'],
-        fn_args.custom_config['outer_units'],
-        fn_args.custom_config['inner_units'],
+        fn_args.custom_config["input_features"],
+        fn_args.custom_config["window_size"],
+        fn_args.custom_config["outer_units"],
+        fn_args.custom_config["inner_units"],
     )
 
     # tf callbacks for tensorboard
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
         log_dir=fn_args.model_run_dir,
-        update_freq='batch',
+        update_freq="batch",
     )
 
     # validation_data = list(eval_dataset.as_numpy_iterator())
@@ -153,24 +170,33 @@ def run_fn(fn_args: TrainerFnArgs):
         autoencoded_features = model(preprocessed_features)
 
         return {
-            **{ f"input_features::{f}": input_features[f] for f in input_features.keys() },
-            **{ f"preprocessed_features::{f}": preprocessed_features[f] for f in preprocessed_features.keys() },
+            **{
+                f"input_features::{f}": input_features[f] for f in input_features.keys()
+            },
+            **{
+                f"preprocessed_features::{f}": preprocessed_features[f]
+                for f in preprocessed_features.keys()
+            },
             # Output tensor names are of the form:
             # lstm_autoencoder_model/decoder/{feature_name}/Reshape_1:0
-            **{ f"output_features::{f.name.split('/')[2]}": f for f in autoencoded_features },
+            **{
+                f"output_features::{f.name.split('/')[2]}": f
+                for f in autoencoded_features
+            },
         }
 
     _input_tf_specs = {
         f: tf.TensorSpec(
-            shape=[None, fn_args.custom_config['window_size']],
-            dtype=tf.float32,
-            name=f
-        ) for f in fn_args.custom_config['input_features']
+            shape=[None, fn_args.custom_config["window_size"]], dtype=tf.float32, name=f
+        )
+        for f in fn_args.custom_config["input_features"]
     }
 
     signatures = {
-        'serving_default': _serve_tf_examples_fn.get_concrete_function(**_input_tf_specs)
+        "serving_default": _serve_tf_examples_fn.get_concrete_function(
+            **_input_tf_specs
+        )
     }
 
     # Save model (this is the effective output of this function)
-    model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
+    model.save(fn_args.serving_model_dir, save_format="tf", signatures=signatures)
