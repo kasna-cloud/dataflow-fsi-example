@@ -153,18 +153,19 @@ def run_fn(fn_args: TrainerFnArgs):
         autoencoded_features = model(preprocessed_features)
 
         return {
-            **{ f"input_features::{f}": input_features[f] for f in input_features.keys() },
-            **{ f"preprocessed_features::{f}": preprocessed_features[f] for f in preprocessed_features.keys() },
+            **{ f"input_features::{f}":
+               input_features[f] for f in input_features.keys() },
+            **{ f"preprocessed_features::{f}":
+               preprocessed_features[f] for f in preprocessed_features.keys() },
             # Output tensor names are of the form:
             # lstm_autoencoder_model/decoder/{feature_name}/Reshape_1:0
-            **{ f"output_features::{f.name.split('/')[2]}": f for f in autoencoded_features },
+            **{ f"output_features::{f.name.split('/')[2]}":
+               f for f in autoencoded_features },
         }
 
     _input_tf_specs = {
         f: tf.TensorSpec(
-            shape=[None, fn_args.custom_config['window_size']],
-            dtype=tf.float32,
-            name=f
+            shape=[None, fn_args.custom_config['window_size']], dtype=tf.float32, name=f
         ) for f in fn_args.custom_config['input_features']
     }
 
