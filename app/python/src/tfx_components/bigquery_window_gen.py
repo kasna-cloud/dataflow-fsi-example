@@ -47,6 +47,8 @@ class _BigQueryTimestampParser(beam.DoFn):
         self._timestamp_column = timestamp_column
 
     def process(self, big_query_item):
+        #bigquery, not big_query? At least thats what all the other libraries use (I think) 
+        
         # Extract the numeric Unix seconds-since-epoch timestamp to be
         # associated with the current log entry.
         timestamp = big_query_item[self._timestamp_column]
@@ -130,6 +132,9 @@ class BigQueryExampleWithSlidingWindowGen(component.QueryBasedExampleGen):
                  instance_name: Optional[Text] = None):
         """Constructs a BigQueryExampleGen component.
         Args:
+        
+        # query isn't an arg? Also some args not present in doco
+        
             query: BigQuery sql string, query result will be treated as a single
                 split, can be overwritten by input_config.
             input_config: An example_gen_pb2.Input instance with Split.pattern as
