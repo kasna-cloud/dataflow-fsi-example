@@ -28,4 +28,3 @@ def create_default_forex_generators() -> Dict[str, FOREXGenerator]:
         symbol: FOREXGenerator(value, currency_pair=symbol)
         for symbol, value in starting_values.items()
     }
-

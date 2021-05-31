@@ -13,13 +13,15 @@ def preprocessing_fn(inputs: Dict[Text, Any], custom_config) -> Dict[Text, Any]:
     Returns:
       Map from string feature key to transformed feature operations.
     """
-    feature_columns = sorted(custom_config['feature_columns'])
+    feature_columns = sorted(custom_config["feature_columns"])
     features = {}
 
     for feature in feature_columns:
         if feature not in inputs.keys():
-            raise ValueError(f"Input is missing required feature {feature}. Input has: {inputs.keys()}")
+            raise ValueError(
+                f"Input is missing required feature {feature}. Input has: {inputs.keys()}"
+            )
 
-        features[f"{feature}"] = (tft.scale_to_z_score(inputs[feature]))
+        features[f"{feature}"] = tft.scale_to_z_score(inputs[feature])
 
     return features
