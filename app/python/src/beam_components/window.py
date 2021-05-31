@@ -37,3 +37,4 @@ def window_elements(
             _sort_windows
         ).with_output_types(List[Dict[Text, Any]])
     return windowed_elements
+
