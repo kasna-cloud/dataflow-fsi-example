@@ -243,22 +243,24 @@ class FOREXGenerator:
             lambdas = self.lambdas
             s = self.s
             mu = self.mu_sgt
-        v = q ** (-1 / p) * (
-            (3 * lambdas ** 2 + 1) * (B(3 / p, q - 2 / p) / B(1 / p, q))
-            - 4 * lambdas ** 2 * (B(2 / p, q - 1 / p) / B(1 / p, q)) ** 2
-        ) ** (-1 / 2)
+
+        v = q ** (-1 / p) / (
+            (
+                (3 * lambdas ** 2 + 1) * (B(3 / p, q - 2 / p) / B(1 / p, q))
+                - 4 * lambdas ** 2 * (B(2 / p, q - 1 / p) / B(1 / p, q)) ** 2
+            )
+            ** (1 / 2)
+        )
+
         m = 2 * v * s * lambdas * q ** (1 / p) * B(2 / p, q - 1 / p) / B(1 / p, q)
 
         f_x = p / (
-            2
-            * v
-            * s
-            * q ** (1 / p)
-            * B(1 / p, q)
+            (2 * v * s * q ** (1 / p) * B(1 / p, q))
             * (
-                np.abs(x - mu + m) ** p
-                / (q * (v * s) ** p)
-                * (lambdas * np.sign(x - mu + m) + 1) ** p
+                (
+                    np.abs(x - mu + m) ** p
+                    / ((q * (v * s) ** p) * (lambdas * np.sign(x - mu + m) + 1) ** p)
+                )
                 + 1
             )
             ** (1 / p + q)
