@@ -48,13 +48,13 @@ class _BigQueryTimestampParser(beam.DoFn):
         super().__init__()
         self._timestamp_column = timestamp_column
 
-    def process(self, big_query_item):
+    def process(self, bigquery_item):
         # Extract the numeric Unix seconds-since-epoch timestamp to be
         # associated with the current log entry.
-        timestamp = big_query_item[self._timestamp_column]
+        timestamp = bigquery_item[self._timestamp_column]
         # Wrap and emit the current entry and new timestamp in a
         # TimestampedValue.
-        yield beam.window.TimestampedValue(big_query_item, timestamp.timestamp())
+        yield beam.window.TimestampedValue(bigquery_item, timestamp.timestamp())
 
 
 @beam.ptransform_fn
@@ -136,10 +136,21 @@ class BigQueryExampleWithSlidingWindowGen(component.QueryBasedExampleGen):
         example_artifacts: Optional[types.Channel] = None,
         instance_name: Optional[Text] = None,
     ):
-        """Constructs a BigQueryExampleGen component.
+        """Constructs a BigQueryExampleWithSlidingWindowGen component.
         Args:
-            query: BigQuery sql string, query result will be treated as a single
-                split, can be overwritten by input_config.
+            window_length: The length of the sliding window to generate.
+                Unit is both seconds and elements, as the underlying elements are
+                expected to be timestamped at a rate of 1Hz.
+            bq_timestamp_attribute: The attribute in bigquery to use for the timestamp
+                of the elements.
+            drop_irregular_windows: Flag whether to drop windows that do not have the
+                specified window_length. This can happen if the underlying timestamps
+                have a frequency other than 1Hz, as well as at the boundaries of the
+                bigquery query. Default True.
+            use_sequenceexample: Flag whether to return sequenceexamples.
+                If True will return elements of type tf.train.SequenceExample
+                If False will return elements of type tf.train.Example
+                Defaults to False.
             input_config: An example_gen_pb2.Input instance with Split.pattern as
                 BigQuery sql string. If set, it overwrites the 'query' arg, and allows
                 different queries per split. If any field is provided as a

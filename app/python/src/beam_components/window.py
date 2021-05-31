@@ -12,6 +12,8 @@ def window_elements(
     drop_irregular_windows: bool = True,
     sort_windows_by: str = "timestamp",
 ):
+    """Window elements into regular windows of a given size. Assumes elements flow at a fixed rate of 1Hz."""
+
     def _sort_windows(window: Iterable[Dict[Text, Any]]) -> List[Dict[Text, Any]]:
         sorted_window = sorted(window, key=lambda e: e[sort_windows_by])
         return sorted_window
@@ -37,4 +39,3 @@ def window_elements(
             _sort_windows
         ).with_output_types(List[Dict[Text, Any]])
     return windowed_elements
-
