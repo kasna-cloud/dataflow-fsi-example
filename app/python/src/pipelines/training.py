@@ -45,7 +45,10 @@ def setup_parser(parser):
         "--window_length",
         default=60,
         type=int,
-        help="Length of window to input into model inference.",
+        help=(
+            "Length of window to input into model inference. ",
+            "Unit is number of elements and seconds, it is assumed there is one element per second.",
+        ),
     )
     parser.add_argument(
         "--num_train_steps",
