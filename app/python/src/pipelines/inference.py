@@ -87,6 +87,7 @@ def bootstrap_initial_ai_platform_model(
             parent=model_prefix,
             body={
                 "name": "initial_pretrained_bootstrap_model",
+                # Note that ai-platform requires explicit runtime and python version, and 3.7 is the current latest
                 "runtimeVersion": "2.4",
                 "framework": "TENSORFLOW",
                 "pythonVersion": "3.7",
