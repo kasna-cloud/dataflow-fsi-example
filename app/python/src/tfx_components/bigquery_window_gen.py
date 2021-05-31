@@ -25,11 +25,11 @@ class _BigQueryConverter(object):
         self,
         query: Text,
         use_sequenceexample: bool = False,
-        project_id: Optional[Text] = None
+        project_id: Optional[Text] = None,
     ):
         client = bigquery.Client(project=project_id)
         # Dummy query to get the type information for each field.
-        query_job = client.query('SELECT * FROM ({}) LIMIT 0'.format(query))
+        query_job = client.query("SELECT * FROM ({}) LIMIT 0".format(query))
         results = query_job.result()
         schema = {f.name: f.field_type for f in results.schema}
         if use_sequenceexample:
@@ -37,7 +37,9 @@ class _BigQueryConverter(object):
         else:
             self._serialiser = TFExampleSerialiser(schema)
 
-    def Convert(self, window: List[Dict[Text, Any]]) -> Union[tf.train.Example, tf.train.SequenceExample]:
+    def Convert(
+        self, window: List[Dict[Text, Any]]
+    ) -> Union[tf.train.Example, tf.train.SequenceExample]:
         return self._serialiser.from_json(window)
 
 
@@ -46,43 +48,50 @@ class _BigQueryTimestampParser(beam.DoFn):
         super().__init__()
         self._timestamp_column = timestamp_column
 
-    def process(self, big_query_item):
+    def process(self, bigquery_item):
         # Extract the numeric Unix seconds-since-epoch timestamp to be
         # associated with the current log entry.
-        timestamp = big_query_item[self._timestamp_column]
+        timestamp = bigquery_item[self._timestamp_column]
         # Wrap and emit the current entry and new timestamp in a
         # TimestampedValue.
-        yield beam.window.TimestampedValue(big_query_item, timestamp.timestamp())
+        yield beam.window.TimestampedValue(bigquery_item, timestamp.timestamp())
 
 
 @beam.ptransform_fn
 @beam.typehints.with_input_types(beam.Pipeline)
 def _BigQueryToExampleWithSlidingWindow(
-        pipeline: beam.Pipeline,
-        exec_properties: Dict[Text, Any],
-        split_pattern: Text
+    pipeline: beam.Pipeline, exec_properties: Dict[Text, Any], split_pattern: Text
 ) -> beam.pvalue.PCollection:
     # TODO: retrieve the window_length property better:
-    custom_config = ast.literal_eval(exec_properties.get('custom_config'))
-    window_length = int(custom_config['window_length'])
-    bq_timestamp_attribute = custom_config['bq_timestamp_attribute']
-    drop_irregular_windows = bool(distutils.util.strtobool(custom_config['drop_irregular_windows']))
-    use_sequenceexample = bool(distutils.util.strtobool(custom_config['use_sequenceexample']))
+    custom_config = ast.literal_eval(exec_properties.get("custom_config"))
+    window_length = int(custom_config["window_length"])
+    bq_timestamp_attribute = custom_config["bq_timestamp_attribute"]
+    drop_irregular_windows = bool(
+        distutils.util.strtobool(custom_config["drop_irregular_windows"])
+    )
+    use_sequenceexample = bool(
+        distutils.util.strtobool(custom_config["use_sequenceexample"])
+    )
 
-    beam_pipeline_args = exec_properties['_beam_pipeline_args']
+    beam_pipeline_args = exec_properties["_beam_pipeline_args"]
     pipeline_options = beam.options.pipeline_options.PipelineOptions(beam_pipeline_args)
     # Try to parse the GCP project ID from the beam pipeline options.
-    project = pipeline_options.view_as(beam.options.pipeline_options.GoogleCloudOptions).project
+    project = pipeline_options.view_as(
+        beam.options.pipeline_options.GoogleCloudOptions
+    ).project
     if isinstance(project, beam.options.value_provider.ValueProvider):
         project = project.get()
     converter = _BigQueryConverter(split_pattern, use_sequenceexample, project)
 
     if drop_irregular_windows:
         logging.warning("ExampleGen will silently drop windows with irregular lengths")
-    windowed_rows = (pipeline
+    windowed_rows = (
+        pipeline
         | "QueryTable" >> utils.ReadFromBigQuery(query=split_pattern)
-        | "ParseTimestamp" >> beam.ParDo(_BigQueryTimestampParser(bq_timestamp_attribute))
-        | "WindowElements" >> window_elements(
+        | "ParseTimestamp"
+        >> beam.ParDo(_BigQueryTimestampParser(bq_timestamp_attribute))
+        | "WindowElements"
+        >> window_elements(
             window_length=window_length,
             drop_irregular_windows=drop_irregular_windows,
             sort_windows_by=bq_timestamp_attribute,
@@ -90,17 +99,14 @@ def _BigQueryToExampleWithSlidingWindow(
     )
     if use_sequenceexample:
         logging.warning("ExampleGen will output tf.train.SequenceExample")
-        return (windowed_rows
-            | "MapToTFSequenceExample" >> beam.Map(converter.Convert).with_output_types(
-                tf.train.SequenceExample
-            )
-        )
+        return windowed_rows | "MapToTFSequenceExample" >> beam.Map(
+            converter.Convert
+        ).with_output_types(tf.train.SequenceExample)
     else:
         logging.warning("ExampleGen will output tf.train.Example")
-        return (windowed_rows
-            | "MapToTFExample" >> beam.Map(converter.Convert).with_output_types(
-                tf.train.Example)
-            )
+        return windowed_rows | "MapToTFExample" >> beam.Map(
+            converter.Convert
+        ).with_output_types(tf.train.Example)
 
 
 class Executor(base_example_gen_executor.BaseExampleGenExecutor):
@@ -119,19 +125,32 @@ class BigQueryExampleWithSlidingWindowGen(component.QueryBasedExampleGen):
 
     EXECUTOR_SPEC = executor_spec.ExecutorClassSpec(Executor)
 
-    def __init__(self,
-                 window_length: int,
-                 bq_timestamp_attribute: str,
-                 drop_irregular_windows: bool = True,
-                 use_sequenceexample: bool = False,
-                 input_config: Optional[example_gen_pb2.Input] = None,
-                 output_config: Optional[example_gen_pb2.Output] = None,
-                 example_artifacts: Optional[types.Channel] = None,
-                 instance_name: Optional[Text] = None):
-        """Constructs a BigQueryExampleGen component.
+    def __init__(
+        self,
+        window_length: int,
+        bq_timestamp_attribute: str,
+        drop_irregular_windows: bool = True,
+        use_sequenceexample: bool = False,
+        input_config: Optional[example_gen_pb2.Input] = None,
+        output_config: Optional[example_gen_pb2.Output] = None,
+        example_artifacts: Optional[types.Channel] = None,
+        instance_name: Optional[Text] = None,
+    ):
+        """Constructs a BigQueryExampleWithSlidingWindowGen component.
         Args:
-            query: BigQuery sql string, query result will be treated as a single
-                split, can be overwritten by input_config.
+            window_length: The length of the sliding window to generate.
+                Unit is both seconds and elements, as the underlying elements are
+                expected to be timestamped at a rate of 1Hz.
+            bq_timestamp_attribute: The attribute in bigquery to use for the timestamp
+                of the elements.
+            drop_irregular_windows: Flag whether to drop windows that do not have the
+                specified window_length. This can happen if the underlying timestamps
+                have a frequency other than 1Hz, as well as at the boundaries of the
+                bigquery query. Default True.
+            use_sequenceexample: Flag whether to return sequenceexamples.
+                If True will return elements of type tf.train.SequenceExample
+                If False will return elements of type tf.train.Example
+                Defaults to False.
             input_config: An example_gen_pb2.Input instance with Split.pattern as
                 BigQuery sql string. If set, it overwrites the 'query' arg, and allows
                 different queries per split. If any field is provided as a
@@ -152,10 +171,10 @@ class BigQueryExampleWithSlidingWindowGen(component.QueryBasedExampleGen):
         super(BigQueryExampleWithSlidingWindowGen, self).__init__(
             input_config=input_config,
             custom_config={
-                'window_length': str(window_length),
-                'bq_timestamp_attribute': str(bq_timestamp_attribute),
-                'drop_irregular_windows': str(drop_irregular_windows),
-                'use_sequenceexample': str(use_sequenceexample),
+                "window_length": str(window_length),
+                "bq_timestamp_attribute": str(bq_timestamp_attribute),
+                "drop_irregular_windows": str(drop_irregular_windows),
+                "use_sequenceexample": str(use_sequenceexample),
             },
             output_config=output_config,
             example_artifacts=example_artifacts,

@@ -60,21 +60,27 @@ class FOREXGenerator:
         """
 
         self.x = x
-        self.theta = 0.006 # Mean reversion speed (control the size and duration of spikes)
-        self.mu = self.x # Long-term mean (the further from the initial `x`, the more initial movement)
+        self.theta = (
+            0.006  # Mean reversion speed (control the size and duration of spikes)
+        )
+        self.mu = (
+            self.x
+        )  # Long-term mean (the further from the initial `x`, the more initial movement)
         self.d = 0.5
         self.sigma = 0.094  # Drift term scale factor
         self.p = 1.5  # p and q determine skew student t (SGT) tail size
         self.q = 10  # p and q determine skew student t (SGT) tail size
-        self.lambdas = -0.0082 # Skewness lambda
+        self.lambdas = -0.0082  # Skewness lambda
         self.mu_sgt = 0.001
         self.s = 0.0062  # SGT scale param s>0
         self.dT = dt  # Length of numeric approximation step
         self.timer = 0  # Timer for introducting gaps into data
-        self.currencypair = currency_pair # Currency pair name
-        self.vals = np.linspace(-1, 1, 50000) # Values in returns distribution (Z variable in above formula)
+        self.currencypair = currency_pair  # Currency pair name
+        self.vals = np.linspace(
+            -1, 1, 50000
+        )  # Values in returns distribution (Z variable in above formula)
 
-         # Frequency of values in returns distribution (Z variable in CKLS equation)
+        # Frequency of values in returns distribution (Z variable in CKLS equation)
         if not discrete:
             # If frequencies not provided, then compute
             self.freq = self.skewed_generalized_student_t(self.vals) / sum(
@@ -86,13 +92,13 @@ class FOREXGenerator:
                 x_range=self.vals, currencypair=self.currencypair
             )
             self.freq /= self.freq.sum()
-        
+
         # Load tick timing distributions
         self.tick_val = np.load("./generator_weights/val.npy")
         self.tick_freq = np.load("./generator_weights/freq.npy")
-        
+
         # Generate larger range of RSI values for GBPAUD currency pair for the example use case
-        if self.currencypair == 'GBPAUD':
+        if self.currencypair == "GBPAUD":
             self.extreme_rsi = True
             # Constants to configure the larger range of RSI values
             self.rsi_up_min_factor = 0.05
@@ -100,12 +106,12 @@ class FOREXGenerator:
             self.rsi_down_min_factor = 0.05
             self.rsi_down_max_factor = 0.35
             self.movements = []
-            self.direction = np.random.choice(['normal', 'up', 'down'])
+            self.direction = np.random.choice(["normal", "up", "down"])
             self.normal_timer = 2100
             self.up_down_timer = np.random.randint(2100, 4200)
         else:
             self.extreme_rsi = False
-        
+
         pass
 
     def tick_timing_distrib(self) -> float:
@@ -128,7 +134,7 @@ class FOREXGenerator:
             return None
         else:
             self.timer = self.tick_timing_distrib()
-            
+
             if self.extreme_rsi:
                 # Compute larger range of RSI values by enforcing larger increases (decreases) for an extended period
 
@@ -137,45 +143,42 @@ class FOREXGenerator:
                 positive_movements = self.movements.count(1)
                 negative_movements = self.movements.count(-1)
                 normal_movements = self.movements.count(0)
-                if positive_movements > self.up_down_timer or negative_movements > self.up_down_timer:
-                    self.direction = 'normal'
+                if (
+                    positive_movements > self.up_down_timer
+                    or negative_movements > self.up_down_timer
+                ):
+                    self.direction = "normal"
                     self.movements = []
                 elif normal_movements > self.normal_timer:
-                    self.direction = 'up' if np.random.random(1) <= 0.5 else 'down'
+                    self.direction = "up" if np.random.random(1) <= 0.5 else "down"
                     self.movements = []
                     self.up_down_timer = np.random.randint(2100, 4200)
-                
-                if self.direction == 'up':
+
+                if self.direction == "up":
                     # When enforcing larger increases, reduce magnitude of x_delta when it is negative
-                    x_delta = (
-                        self.theta * (self.mu - self.x) * self.dT
-                        + self.sigma
-                        * (self.x ** self.d)
-                        * np.random.choice(self.vals, p=self.freq)
-                    )
+                    x_delta = self.theta * (self.mu - self.x) * self.dT + self.sigma * (
+                        self.x ** self.d
+                    ) * np.random.choice(self.vals, p=self.freq)
 
                     if x_delta < 0:
                         x_delta = x_delta * np.random.uniform(
-                            low=self.rsi_up_min_factor, 
-                            high=self.rsi_up_max_factor)
+                            low=self.rsi_up_min_factor, high=self.rsi_up_max_factor
+                        )
 
                     self.movements.append(1)
                     xn_1 = self.x + x_delta
                     self.x = xn_1
 
-                elif self.direction == 'down':
+                elif self.direction == "down":
                     # When enforcing larger decreases, reduce magnitude of x_delta when it is positive
-                    x_delta = (
-                        self.theta * (self.mu - self.x) * self.dT
-                        + self.sigma
-                        * (self.x ** self.d)
-                        * np.random.choice(self.vals, p=self.freq)
-                    )
+                    x_delta = self.theta * (self.mu - self.x) * self.dT + self.sigma * (
+                        self.x ** self.d
+                    ) * np.random.choice(self.vals, p=self.freq)
 
                     if x_delta > 0:
                         x_delta = x_delta * np.random.uniform(
-                            low=self.rsi_down_min_factor, 
-                            high=self.rsi_down_max_factor)
+                            low=self.rsi_down_min_factor, high=self.rsi_down_max_factor
+                        )
 
                     self.movements.append(-1)
                     xn_1 = self.x + x_delta
@@ -240,22 +243,24 @@ class FOREXGenerator:
             lambdas = self.lambdas
             s = self.s
             mu = self.mu_sgt
-        v = q ** (-1 / p) * (
-            (3 * lambdas ** 2 + 1) * (B(3 / p, q - 2 / p) / B(1 / p, q))
-            - 4 * lambdas ** 2 * (B(2 / p, q - 1 / p) / B(1 / p, q)) ** 2
-        ) ** (-1 / 2)
+
+        v = q ** (-1 / p) / (
+            (
+                (3 * lambdas ** 2 + 1) * (B(3 / p, q - 2 / p) / B(1 / p, q))
+                - 4 * lambdas ** 2 * (B(2 / p, q - 1 / p) / B(1 / p, q)) ** 2
+            )
+            ** (1 / 2)
+        )
+
         m = 2 * v * s * lambdas * q ** (1 / p) * B(2 / p, q - 1 / p) / B(1 / p, q)
 
         f_x = p / (
-            2
-            * v
-            * s
-            * q ** (1 / p)
-            * B(1 / p, q)
+            (2 * v * s * q ** (1 / p) * B(1 / p, q))
             * (
-                np.abs(x - mu + m) ** p
-                / (q * (v * s) ** p)
-                * (lambdas * np.sign(x - mu + m) + 1) ** p
+                (
+                    np.abs(x - mu + m) ** p
+                    / ((q * (v * s) ** p) * (lambdas * np.sign(x - mu + m) + 1) ** p)
+                )
                 + 1
             )
             ** (1 / p + q)
@@ -293,7 +298,7 @@ class FOREXGenerator:
         returns_val = returns_val[:-1]
         returns_freq = returns_freq / returns_freq.sum()
         param_guess = [self.q, self.p, self.lambdas, self.s, self.mu_sgt]
-        
+
         param_bounds = (
             (0, 0, -1, 0, -np.inf),
             (np.inf, np.inf, 1, np.inf, np.inf),
@@ -355,7 +360,10 @@ class FOREXGenerator:
             self.freq = interpolation(x_range)
         if save:
             with open(
-                os.path.abspath(f"./generator_weights/interpolator_{currencypair}.joblib"), "wb"
+                os.path.abspath(
+                    f"./generator_weights/interpolator_{currencypair}.joblib"
+                ),
+                "wb",
             ) as loc:
                 joblib.dump(interpolation, loc)
         return x_range, interpolation(x_range)
@@ -366,7 +374,8 @@ class FOREXGenerator:
         """Load existing sub-second forex returns data interpolation and use for CKLS
         updates."""
         with open(
-            os.path.abspath(f"./generator_weights/interpolator_{currencypair}.joblib"), "rb"
+            os.path.abspath(f"./generator_weights/interpolator_{currencypair}.joblib"),
+            "rb",
         ) as loc:
             interpolation = joblib.load(loc)
         return interpolation(x_range)
