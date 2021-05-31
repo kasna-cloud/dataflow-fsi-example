@@ -44,6 +44,7 @@ def setup_parser(parser):
 		default=60,
 		type=int,
 		help="Length of window to input into model inference."
+		# In seconds?
 	)
 	parser.add_argument(
 		'--num_train_steps',
@@ -181,6 +182,7 @@ def run_pipeline(
 		examples=transform.outputs['transformed_examples'],
 		transform_graph=transform.outputs['transform_graph'],
 		module_file=os.path.abspath('./src/tfx_components/trainer.py'),
+		# Note: I prefer using __file__ when referring to fixed files due to the fact that its independent of the working directory. 
 		custom_executor_spec=ExecutorClassSpec(GenericExecutor),
 		schema=schema_gen.outputs['schema'],
 		custom_config={
