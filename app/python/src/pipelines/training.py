@@ -176,7 +176,7 @@ def run_pipeline(
     transform = default_components.Transform(
         examples=example_gen.outputs["examples"],
         schema=schema_gen.outputs["schema"],
-        module_file=os.path.abspath("./src/tfx_components/transformer.py"),
+        module_file=os.path.join(os.path.normpath(f"{__file__}/../../tfx_components/transformer.py")),
         custom_config={"feature_columns": feature_metrics},
     )
 
@@ -184,7 +184,7 @@ def run_pipeline(
     trainer = default_components.Trainer(
         examples=transform.outputs["transformed_examples"],
         transform_graph=transform.outputs["transform_graph"],
-        module_file=os.path.abspath("./src/tfx_components/trainer.py"),
+        module_file=os.path.join(os.path.normpath(f"{__file__}/../../tfx_components/trainer.py")),
         custom_executor_spec=ExecutorClassSpec(GenericExecutor),
         schema=schema_gen.outputs["schema"],
         custom_config={
