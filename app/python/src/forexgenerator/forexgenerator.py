@@ -234,6 +234,8 @@ class FOREXGenerator:
             float: next time step x(t+1)
         """
         # For the sake of readability of the formulae avoid self.*:
+        
+        
         if from_class:
             q = self.q
             p = self.p
@@ -246,6 +248,10 @@ class FOREXGenerator:
         ) ** (-1 / 2)
         m = 2 * v * s * lambdas * q ** (1 / p) * B(2 / p, q - 1 / p) / B(1 / p, q)
 
+        # Honestly, these formulae should try to mimic standard mathematical formatting if at all possible
+        # - the overlinting and excessive line breaks makes it hard to read
+
+        
         f_x = p / (
             2
             * v
