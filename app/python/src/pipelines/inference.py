@@ -81,7 +81,7 @@ def bootstrap_initial_ai_platform_model(project_id: str, model_name: str, gs_boo
 		'name': 'initial_pretrained_bootstrap_model',
 		'runtimeVersion': '2.4',
 		'framework': "TENSORFLOW",
-		'pythonVersion': '3.7',
+		'pythonVersion': '3.7', #Is there a reason for using a sepeate python version than defined in the dockerfile etc?
 		'deploymentUri': gs_bootstrap_model_dir,
 	})
 	version_create_request.execute()
@@ -136,7 +136,7 @@ def run_pipeline(
 			prediction_output['input_features'],
 			prediction_output['preprocessed_features'],
 			prediction_output['output_features'],
-		):
+		):  
 			error += (sum([(preprocessed[f] - outputs[f]) ** 2 for f in feature_metrics]))
 		
 		logging.warning({
