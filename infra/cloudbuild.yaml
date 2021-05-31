@@ -48,7 +48,7 @@ steps:
         cd infra
         sed -i "s/BUCKET/$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET}/g" backend.tf
         terraform apply -auto-approve
-  - id: bootstrap-GBPAUD-model
+  - id: upload-bootstrap-models
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     entrypoint: "bash"
     waitFor: ["terraform-apply"]
@@ -59,12 +59,4 @@ steps:
         export PROJECT_ID=${PROJECT_ID}
         . config.sh
         gsutil cp -r app/bootstrap_models/GBPAUD gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/initial_bootstrap_models/GBPAUD
-        gcloud ai-platform models create autoencoderGBPAUD --regions=$${AI_PLATFORM_MODEL_REGION}
-        gcloud ai-platform versions create initial_pretrained \
-          --model=autoencoderGBPAUD \
-          --region=global \
-          --origin="gs://$${PROJECT_ID}_$${GCS_BUCKET_NAME}/initial_bootstrap_models/GBPAUD" \
-          --runtime-version=2.4 \
-          --framework=TENSORFLOW \
-          --python-version=3.7
 timeout: 3600s

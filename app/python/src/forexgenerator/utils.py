@@ -4,6 +4,7 @@ from src.forexgenerator.forexgenerator import FOREXGenerator
 
 
 def create_default_forex_generators() -> Dict[str, FOREXGenerator]:
+    """Default currency pairs and their starting prices."""
     starting_values = {
         "AUDJPY": 81.44,
         "AUDUSD": 0.77,
@@ -27,3 +28,4 @@ def create_default_forex_generators() -> Dict[str, FOREXGenerator]:
         symbol: FOREXGenerator(value, currency_pair=symbol)
         for symbol, value in starting_values.items()
     }
+

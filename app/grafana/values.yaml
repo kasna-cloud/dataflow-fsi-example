@@ -29,7 +29,7 @@ dashboards:
           "editable": true,
           "gnetId": null,
           "graphTooltip": 0,
-          "iteration": 1621846746001,
+          "iteration": 1621904161262,
           "links": [],
           "panels": [
             {
@@ -186,7 +186,7 @@ dashboards:
               },
               "id": 14,
               "panels": [],
-              "title": "Gap Filling for CADJPY",
+              "title": "Gap Filling",
               "type": "row"
             },
             {
@@ -280,6 +280,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -350,7 +356,7 @@ dashboards:
                   ]
                 }
               ],
-              "title": "CADJPY - Tick Value vs Simple Moving Average",
+              "title": "CADJPY - Underlying Price vs Simple Moving Average",
               "type": "timeseries"
             },
             {
@@ -502,6 +508,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -666,6 +678,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -724,7 +742,6 @@ dashboards:
                     "showPoints": "never",
                     "spanNulls": true
                   },
-                  "displayName": "Log Returns",
                   "mappings": [],
                   "thresholds": {
                     "mode": "absolute",
@@ -785,6 +802,12 @@ dashboards:
                           "LOG_RTN"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "LOG_RETURNS"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -844,7 +867,6 @@ dashboards:
                     "spanNulls": true
                   },
                   "decimals": 1,
-                  "displayName": "Relative Strength Indicator",
                   "mappings": [],
                   "thresholds": {
                     "mode": "absolute",
@@ -1086,6 +1108,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -1266,6 +1294,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -1312,9 +1346,16 @@ dashboards:
             },
             {
               "aliasColors": {
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
                 "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
                 "anomaly": "semi-dark-red",
-                "value": "blue"
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -1328,8 +1369,8 @@ dashboards:
               "fill": 1,
               "fillGradient": 0,
               "gridPos": {
-                "h": 9,
-                "w": 12,
+                "h": 11,
+                "w": 24,
                 "x": 0,
                 "y": 57
               },
@@ -1361,15 +1402,24 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:7239",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
                 },
                 {
-                  "$$hashKey": "object:2720",
-                  "alias": "RSI_condition",
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
+                  "bars": true,
+                  "lines": false,
                   "yaxis": 2
                 }
               ],
@@ -1398,6 +1448,12 @@ dashboards:
                           "value"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "UNDERLYING_PRICE"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -1434,7 +1490,79 @@ dashboards:
                   "partitionedField": "",
                   "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
                   "refId": "Recon error",
                   "select": [
                     [
@@ -1466,49 +1594,13 @@ dashboards:
                       "type": "expression"
                     }
                   ]
-                },
-                {
-                  "dataset": "forex",
-                  "format": "time_series",
-                  "group": [],
-                  "hide": false,
-                  "metricColumn": "none",
-                  "orderByCol": "1",
-                  "orderBySort": "1",
-                  "partitioned": false,
-                  "partitionedField": "",
-                  "project": "${PROJECT_ID}",
-                  "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 OR RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS RSI_condition\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "RSI condition",
-                  "select": [
-                    [
-                      {
-                        "params": [
-                          "-- value --"
-                        ],
-                        "type": "column"
-                      }
-                    ]
-                  ],
-                  "sharded": false,
-                  "table": "metrics",
-                  "timeColumn": "timestamp",
-                  "timeColumnType": "TIMESTAMP",
-                  "where": [
-                    {
-                      "name": "$__timeFilter",
-                      "params": [],
-                      "type": "macro"
-                    }
-                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Tick value vs RSI condition vs Anomalies",
+              "title": "RSI Valuations vs Underlying price",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1541,7 +1633,7 @@ dashboards:
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {
@@ -1551,7 +1643,16 @@ dashboards:
             },
             {
               "aliasColors": {
-                "anomaly": "semi-dark-red"
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
+                "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
+                "anomaly": "semi-dark-red",
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -1567,11 +1668,11 @@ dashboards:
               "gridPos": {
                 "h": 9,
                 "w": 12,
-                "x": 12,
-                "y": 57
+                "x": 0,
+                "y": 68
               },
               "hiddenSeries": false,
-              "id": 29,
+              "id": 30,
               "interval": null,
               "legend": {
                 "alignAsTable": false,
@@ -1598,8 +1699,22 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:7239",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
@@ -1623,202 +1738,6 @@ dashboards:
                   "rawQuery": false,
                   "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
                   "refId": "Tick data",
-                  "select": [
-                    [
-                      {
-                        "params": [
-                          "value"
-                        ],
-                        "type": "column"
-                      }
-                    ]
-                  ],
-                  "sharded": false,
-                  "table": "prices",
-                  "timeColumn": "timestamp",
-                  "timeColumnType": "TIMESTAMP",
-                  "where": [
-                    {
-                      "name": "$__timeFilter",
-                      "params": [],
-                      "type": "macro"
-                    },
-                    {
-                      "name": "",
-                      "params": [
-                        "symbol",
-                        "=",
-                        "\"$model_currency_pair\""
-                      ],
-                      "type": "expression"
-                    }
-                  ]
-                },
-                {
-                  "dataset": "forex",
-                  "format": "time_series",
-                  "group": [],
-                  "hide": false,
-                  "metricColumn": "none",
-                  "orderByCol": "1",
-                  "orderBySort": "1",
-                  "partitioned": false,
-                  "partitionedField": "",
-                  "project": "${PROJECT_ID}",
-                  "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon error",
-                  "select": [
-                    [
-                      {
-                        "params": [
-                          "RELATIVE_STRENGTH_INDICATOR"
-                        ],
-                        "type": "column"
-                      }
-                    ]
-                  ],
-                  "sharded": false,
-                  "table": "metrics",
-                  "timeColumn": "timestamp",
-                  "timeColumnType": "TIMESTAMP",
-                  "where": [
-                    {
-                      "name": "$__timeFilter",
-                      "params": [],
-                      "type": "macro"
-                    },
-                    {
-                      "name": "",
-                      "params": [
-                        "symbol",
-                        "=",
-                        "\"GBPAUD\""
-                      ],
-                      "type": "expression"
-                    }
-                  ]
-                }
-              ],
-              "thresholds": [],
-              "timeFrom": null,
-              "timeRegions": [],
-              "timeShift": null,
-              "title": "Tick value with Anomalies",
-              "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-              },
-              "yaxes": [
-                {
-                  "$$hashKey": "object:4822",
-                  "decimals": 4,
-                  "format": "short",
-                  "label": "",
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": true
-                },
-                {
-                  "$$hashKey": "object:4823",
-                  "decimals": 0,
-                  "format": "short",
-                  "label": "",
-                  "logBase": 1,
-                  "max": "1",
-                  "min": "0",
-                  "show": true
-                }
-              ],
-              "yaxis": {
-                "align": false,
-                "alignLevel": null
-              }
-            },
-            {
-              "aliasColors": {
-                "anomaly": "semi-dark-red"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": null,
-              "description": "",
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "short"
-                },
-                "overrides": []
-              },
-              "fill": 1,
-              "fillGradient": 0,
-              "gridPos": {
-                "h": 9,
-                "w": 12,
-                "x": 0,
-                "y": 66
-              },
-              "hiddenSeries": false,
-              "id": 22,
-              "interval": null,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "maxDataPoints": 30000,
-              "nullPointMode": "null",
-              "options": {
-                "alertThreshold": true
-              },
-              "percentage": false,
-              "pluginVersion": "7.5.5",
-              "pointradius": 2,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-                {
-                  "$$hashKey": "object:7833",
-                  "alias": "anomaly",
-                  "bars": true,
-                  "lines": false,
-                  "yaxis": 2
-                }
-              ],
-              "spaceLength": 10,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "convertToUTC": false,
-                  "dataset": "forex",
-                  "format": "time_series",
-                  "group": [],
-                  "metricColumn": "none",
-                  "orderByCol": "1",
-                  "orderBySort": "1",
-                  "partitioned": false,
-                  "partitionedField": "",
-                  "project": "${PROJECT_ID}",
-                  "rawQuery": false,
-                  "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-                  "refId": "SMA",
                   "select": [
                     [
                       {
@@ -1851,15 +1770,19 @@ dashboards:
                   ]
                 },
                 {
+                  "dataset": "forex",
                   "format": "time_series",
                   "group": [],
                   "hide": false,
                   "metricColumn": "none",
                   "orderByCol": "1",
                   "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon err",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
                   "select": [
                     [
                       {
@@ -1870,7 +1793,9 @@ dashboards:
                       }
                     ]
                   ],
-                  "timeColumn": "-- time --",
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
                   "timeColumnType": "TIMESTAMP",
                   "where": [
                     {
@@ -1879,13 +1804,94 @@ dashboards:
                       "type": "macro"
                     }
                   ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Simple Moving Average with Anomalies",
+              "title": "RSI Valuations vs Simple Moving Average",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1901,7 +1907,7 @@ dashboards:
               },
               "yaxes": [
                 {
-                  "$$hashKey": "object:7700",
+                  "$$hashKey": "object:4822",
                   "decimals": 4,
                   "format": "short",
                   "label": "",
@@ -1911,14 +1917,14 @@ dashboards:
                   "show": true
                 },
                 {
-                  "$$hashKey": "object:7701",
+                  "$$hashKey": "object:4823",
                   "decimals": 0,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {
@@ -1928,7 +1934,16 @@ dashboards:
             },
             {
               "aliasColors": {
-                "anomaly": "semi-dark-red"
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
+                "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
+                "anomaly": "semi-dark-red",
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -1936,9 +1951,7 @@ dashboards:
               "datasource": null,
               "description": "",
               "fieldConfig": {
-                "defaults": {
-                  "unit": "short"
-                },
+                "defaults": {},
                 "overrides": []
               },
               "fill": 1,
@@ -1947,23 +1960,25 @@ dashboards:
                 "h": 9,
                 "w": 12,
                 "x": 12,
-                "y": 66
+                "y": 68
               },
               "hiddenSeries": false,
-              "id": 23,
+              "id": 31,
               "interval": null,
               "legend": {
+                "alignAsTable": false,
                 "avg": false,
                 "current": false,
                 "max": false,
                 "min": false,
+                "rightSide": false,
                 "show": true,
                 "total": false,
                 "values": false
               },
               "lines": true,
               "linewidth": 1,
-              "maxDataPoints": 30000,
+              "maxDataPoints": 1200000,
               "nullPointMode": "null",
               "options": {
                 "alertThreshold": true
@@ -1975,8 +1990,22 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:8096",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
@@ -1999,7 +2028,7 @@ dashboards:
                   "project": "${PROJECT_ID}",
                   "rawQuery": false,
                   "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-                  "refId": "EMA",
+                  "refId": "Tick data",
                   "select": [
                     [
                       {
@@ -2032,15 +2061,19 @@ dashboards:
                   ]
                 },
                 {
+                  "dataset": "forex",
                   "format": "time_series",
                   "group": [],
                   "hide": false,
                   "metricColumn": "none",
                   "orderByCol": "1",
                   "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon err",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
                   "select": [
                     [
                       {
@@ -2051,7 +2084,9 @@ dashboards:
                       }
                     ]
                   ],
-                  "timeColumn": "-- time --",
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
                   "timeColumnType": "TIMESTAMP",
                   "where": [
                     {
@@ -2060,13 +2095,94 @@ dashboards:
                       "type": "macro"
                     }
                   ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Exponential Moving Average with Anomalies",
+              "title": "RSI Valuations vs Exponential Moving Average",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -2082,7 +2198,7 @@ dashboards:
               },
               "yaxes": [
                 {
-                  "$$hashKey": "object:8068",
+                  "$$hashKey": "object:4822",
                   "decimals": 4,
                   "format": "short",
                   "label": "",
@@ -2092,14 +2208,14 @@ dashboards:
                   "show": true
                 },
                 {
-                  "$$hashKey": "object:8069",
+                  "$$hashKey": "object:4823",
                   "decimals": 0,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {
@@ -2109,7 +2225,16 @@ dashboards:
             },
             {
               "aliasColors": {
-                "anomaly": "semi-dark-red"
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
+                "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
+                "anomaly": "semi-dark-red",
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -2117,9 +2242,7 @@ dashboards:
               "datasource": null,
               "description": "",
               "fieldConfig": {
-                "defaults": {
-                  "unit": "short"
-                },
+                "defaults": {},
                 "overrides": []
               },
               "fill": 1,
@@ -2128,23 +2251,25 @@ dashboards:
                 "h": 9,
                 "w": 12,
                 "x": 0,
-                "y": 75
+                "y": 77
               },
               "hiddenSeries": false,
-              "id": 25,
+              "id": 33,
               "interval": null,
               "legend": {
+                "alignAsTable": false,
                 "avg": false,
                 "current": false,
                 "max": false,
                 "min": false,
+                "rightSide": false,
                 "show": true,
                 "total": false,
                 "values": false
               },
               "lines": true,
               "linewidth": 1,
-              "maxDataPoints": 30000,
+              "maxDataPoints": 1200000,
               "nullPointMode": "null",
               "options": {
                 "alertThreshold": true
@@ -2156,8 +2281,22 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:8755",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
@@ -2180,7 +2319,7 @@ dashboards:
                   "project": "${PROJECT_ID}",
                   "rawQuery": false,
                   "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-                  "refId": "Log returns",
+                  "refId": "Tick data",
                   "select": [
                     [
                       {
@@ -2188,6 +2327,12 @@ dashboards:
                           "LOG_RTN"
                         ],
                         "type": "column"
+                      },
+                      {
+                        "params": [
+                          "LOG_RETURNS"
+                        ],
+                        "type": "alias"
                       }
                     ]
                   ],
@@ -2213,15 +2358,19 @@ dashboards:
                   ]
                 },
                 {
+                  "dataset": "forex",
                   "format": "time_series",
                   "group": [],
                   "hide": false,
                   "metricColumn": "none",
                   "orderByCol": "1",
                   "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon err",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
                   "select": [
                     [
                       {
@@ -2232,7 +2381,9 @@ dashboards:
                       }
                     ]
                   ],
-                  "timeColumn": "-- time --",
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
                   "timeColumnType": "TIMESTAMP",
                   "where": [
                     {
@@ -2241,13 +2392,94 @@ dashboards:
                       "type": "macro"
                     }
                   ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Log returns with Anomalies",
+              "title": "RSI Valuations vs Log Returns",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -2263,23 +2495,24 @@ dashboards:
               },
               "yaxes": [
                 {
-                  "$$hashKey": "object:8727",
+                  "$$hashKey": "object:4822",
+                  "decimals": 4,
                   "format": "short",
-                  "label": null,
+                  "label": "",
                   "logBase": 1,
                   "max": null,
                   "min": null,
                   "show": true
                 },
                 {
-                  "$$hashKey": "object:8728",
+                  "$$hashKey": "object:4823",
                   "decimals": 0,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {
@@ -2289,7 +2522,16 @@ dashboards:
             },
             {
               "aliasColors": {
-                "anomaly": "semi-dark-red"
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
+                "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
+                "anomaly": "semi-dark-red",
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -2297,9 +2539,7 @@ dashboards:
               "datasource": null,
               "description": "",
               "fieldConfig": {
-                "defaults": {
-                  "unit": "short"
-                },
+                "defaults": {},
                 "overrides": []
               },
               "fill": 1,
@@ -2308,23 +2548,25 @@ dashboards:
                 "h": 9,
                 "w": 12,
                 "x": 12,
-                "y": 75
+                "y": 77
               },
               "hiddenSeries": false,
-              "id": 24,
+              "id": 32,
               "interval": null,
               "legend": {
+                "alignAsTable": false,
                 "avg": false,
                 "current": false,
                 "max": false,
                 "min": false,
+                "rightSide": false,
                 "show": true,
                 "total": false,
                 "values": false
               },
               "lines": true,
               "linewidth": 1,
-              "maxDataPoints": 30000,
+              "maxDataPoints": 1200000,
               "nullPointMode": "null",
               "options": {
                 "alertThreshold": true
@@ -2336,8 +2578,22 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:8360",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
@@ -2360,7 +2616,7 @@ dashboards:
                   "project": "${PROJECT_ID}",
                   "rawQuery": false,
                   "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-                  "refId": "Std dev",
+                  "refId": "Tick data",
                   "select": [
                     [
                       {
@@ -2393,15 +2649,19 @@ dashboards:
                   ]
                 },
                 {
+                  "dataset": "forex",
                   "format": "time_series",
                   "group": [],
                   "hide": false,
                   "metricColumn": "none",
                   "orderByCol": "1",
                   "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon err",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
                   "select": [
                     [
                       {
@@ -2412,7 +2672,9 @@ dashboards:
                       }
                     ]
                   ],
-                  "timeColumn": "-- time --",
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
                   "timeColumnType": "TIMESTAMP",
                   "where": [
                     {
@@ -2421,13 +2683,94 @@ dashboards:
                       "type": "macro"
                     }
                   ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Standard Deviation with Anomalies",
+              "title": "RSI Valuations vs Standard Deviation",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -2443,23 +2786,24 @@ dashboards:
               },
               "yaxes": [
                 {
-                  "$$hashKey": "object:8227",
+                  "$$hashKey": "object:4822",
+                  "decimals": 4,
                   "format": "short",
-                  "label": null,
+                  "label": "",
                   "logBase": 1,
                   "max": null,
                   "min": null,
                   "show": true
                 },
                 {
-                  "$$hashKey": "object:8228",
+                  "$$hashKey": "object:4823",
                   "decimals": 0,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {
@@ -2469,7 +2813,16 @@ dashboards:
             },
             {
               "aliasColors": {
-                "anomaly": "semi-dark-red"
+                "OVERVALUED": "yellow",
+                "Overvalued": "blue",
+                "RSI_condition": "green",
+                "UNDERLYING_PRICE": "green",
+                "UNDERVALUED": "blue",
+                "UNRELIABLE_RSI": "semi-dark-red",
+                "Undervalued": "yellow",
+                "Unreliable_RSI": "semi-dark-red",
+                "anomaly": "semi-dark-red",
+                "value": "green"
               },
               "bars": false,
               "dashLength": 10,
@@ -2477,9 +2830,7 @@ dashboards:
               "datasource": null,
               "description": "",
               "fieldConfig": {
-                "defaults": {
-                  "unit": "short"
-                },
+                "defaults": {},
                 "overrides": []
               },
               "fill": 1,
@@ -2488,23 +2839,25 @@ dashboards:
                 "h": 9,
                 "w": 12,
                 "x": 0,
-                "y": 84
+                "y": 86
               },
               "hiddenSeries": false,
-              "id": 26,
+              "id": 34,
               "interval": null,
               "legend": {
+                "alignAsTable": false,
                 "avg": false,
                 "current": false,
                 "max": false,
                 "min": false,
+                "rightSide": false,
                 "show": true,
                 "total": false,
                 "values": false
               },
               "lines": true,
               "linewidth": 1,
-              "maxDataPoints": 30000,
+              "maxDataPoints": 1200000,
               "nullPointMode": "null",
               "options": {
                 "alertThreshold": true
@@ -2516,8 +2869,22 @@ dashboards:
               "renderer": "flot",
               "seriesOverrides": [
                 {
-                  "$$hashKey": "object:1513",
-                  "alias": "anomaly",
+                  "$$hashKey": "object:142",
+                  "alias": "UNRELIABLE_RSI",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:143",
+                  "alias": "OVERVALUED",
+                  "bars": true,
+                  "lines": false,
+                  "yaxis": 2
+                },
+                {
+                  "$$hashKey": "object:144",
+                  "alias": "UNDERVALUED",
                   "bars": true,
                   "lines": false,
                   "yaxis": 2
@@ -2540,7 +2907,7 @@ dashboards:
                   "project": "${PROJECT_ID}",
                   "rawQuery": false,
                   "rawSql": "SELECT\n  time_column,\n  value1\nFROM\n  metric_table\nWHERE\n  $__timeFilter(time_column)\n",
-                  "refId": "RSI",
+                  "refId": "Tick data",
                   "select": [
                     [
                       {
@@ -2573,15 +2940,19 @@ dashboards:
                   ]
                 },
                 {
+                  "dataset": "forex",
                   "format": "time_series",
                   "group": [],
                   "hide": false,
                   "metricColumn": "none",
                   "orderByCol": "1",
                   "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
                   "rawQuery": true,
-                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS anomaly\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
-                  "refId": "Recon err",
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR > 70 THEN 1\n    ELSE 0\nEND AS OVERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "RSI condition",
                   "select": [
                     [
                       {
@@ -2592,7 +2963,9 @@ dashboards:
                       }
                     ]
                   ],
-                  "timeColumn": "-- time --",
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
                   "timeColumnType": "TIMESTAMP",
                   "where": [
                     {
@@ -2601,13 +2974,94 @@ dashboards:
                       "type": "macro"
                     }
                   ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN RELATIVE_STRENGTH_INDICATOR < 30 THEN 1\n    ELSE 0\nEND AS UNDERVALUED\nFROM ${PROJECT_ID}.forex.metrics\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "A",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "-- value --"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    }
+                  ]
+                },
+                {
+                  "dataset": "forex",
+                  "format": "time_series",
+                  "group": [],
+                  "hide": false,
+                  "metricColumn": "none",
+                  "orderByCol": "1",
+                  "orderBySort": "1",
+                  "partitioned": false,
+                  "partitionedField": "",
+                  "project": "${PROJECT_ID}",
+                  "rawQuery": true,
+                  "rawSql": "SELECT timestamp,\nCASE\n    WHEN reconstruction_error > $model_threshold THEN 1\n    ELSE 0\nEND AS UNRELIABLE_RSI\nFROM ${PROJECT_ID}.forex.reconerr\nWHERE $__timeFilter(timestamp)\nAND symbol = \"$model_currency_pair\"\nORDER BY timestamp ASC",
+                  "refId": "Recon error",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "RELATIVE_STRENGTH_INDICATOR"
+                        ],
+                        "type": "column"
+                      }
+                    ]
+                  ],
+                  "sharded": false,
+                  "table": "metrics",
+                  "timeColumn": "timestamp",
+                  "timeColumnType": "TIMESTAMP",
+                  "where": [
+                    {
+                      "name": "$__timeFilter",
+                      "params": [],
+                      "type": "macro"
+                    },
+                    {
+                      "name": "",
+                      "params": [
+                        "symbol",
+                        "=",
+                        "\"GBPAUD\""
+                      ],
+                      "type": "expression"
+                    }
+                  ]
                 }
               ],
               "thresholds": [],
               "timeFrom": null,
               "timeRegions": [],
               "timeShift": null,
-              "title": "Relative Strength Indicator with Anomalies",
+              "title": "RSI Valuations vs Relative Strength Indicator",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -2623,24 +3077,24 @@ dashboards:
               },
               "yaxes": [
                 {
-                  "$$hashKey": "object:5599",
-                  "decimals": 1,
+                  "$$hashKey": "object:4822",
+                  "decimals": 4,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
-                  "max": "100",
-                  "min": "0",
+                  "max": null,
+                  "min": null,
                   "show": true
                 },
                 {
-                  "$$hashKey": "object:5600",
+                  "$$hashKey": "object:4823",
                   "decimals": 0,
                   "format": "short",
                   "label": "",
                   "logBase": 1,
                   "max": "1",
                   "min": "0",
-                  "show": true
+                  "show": false
                 }
               ],
               "yaxis": {

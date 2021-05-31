@@ -149,6 +149,18 @@ resource "google_project_iam_member" "dataflow_dataflow_admin" {
   role    = "roles/dataflow.admin"
 }
 
+resource "google_project_iam_member" "dataflow_dataflow_worker" {
+  member  = local.dataflow_service_account
+  project = var.project_id
+  role    = "roles/dataflow.worker"
+}
+
+resource "google_project_iam_member" "dataflow_service_account_user" {
+  member  = local.dataflow_service_account
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+}
+
 resource "google_project_iam_member" "dataflow_ml_developer" {
   member  = local.dataflow_service_account
   project = var.project_id

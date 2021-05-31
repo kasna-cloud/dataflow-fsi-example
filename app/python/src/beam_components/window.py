@@ -19,7 +19,7 @@ def window_elements(
     windowed_elements = (pipeline
         | "AddConstantKey" >> beam.Map(lambda item: (0, item))
         | "WithSlidingWindow" >> beam.WindowInto(
-            beam.transforms.window.SlidingWindows(window_length, 1),    
+            beam.transforms.window.SlidingWindows(window_length, 1),
 			trigger=beam.transforms.trigger.AfterCount(window_length),
 			accumulation_mode=beam.transforms.trigger.AccumulationMode.DISCARDING,
         )
@@ -37,3 +37,4 @@ def window_elements(
             | "Sort" >> beam.Map(_sort_windows).with_output_types(List[Dict[Text, Any]])
         )
     return windowed_elements
+
