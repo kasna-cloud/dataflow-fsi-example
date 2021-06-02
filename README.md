@@ -101,11 +101,11 @@ The logical diagram for the real-time and training in GCP components is below.
     * grafana deployment
     * tfx retraining pipeline cron job, and a singleton job to start dataflow streaming pipelines
 * Dataflow streaming pipelines:
-    * Metrics Library (Java) 
-    * Inference Pipeline (Python)
-    * 3x PubSub-to-BigQuery Pipelines (Python)
+    * [Metrics Library (Java)](./app/java/TimeSeriesPipeline)
+    * [Inference Pipeline (Python)](./app/python/src/pipelines/inference.py)
+    * 3x [PubSub-to-BigQuery Pipelines (Python)](./app/python/src/pipelines/pubsub_to_bigquery.py)
 * Dataflow batch pipline:
-    * Re-training pipeline created dynamically by TFX when the GKE cronjob is run (every hour)
+    * [Re-training pipeline](./app/python/src/pipelines/training.py) created dynamically by TFX when the GKE cronjob is run (every hour)
 
 ### Deployment
 This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
