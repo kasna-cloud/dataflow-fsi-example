@@ -1,12 +1,12 @@
-# Dataflow Time-Series Example
+# Dataflow Financial Services Time-Series Example
 
 This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This is achieved using realistic foreign exchange market data and leverages Google Cloud Platform and the Dataflow time-series sample library. 
 
-![Dashboardds](docs/TSFlow-RSI-Example-Dashboards.png)
+![Dashboards](docs/TSFlow-RSI-Example-Dashboards.png)
 
-The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain.
+The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
-This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform.
+This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
 
 ## Quickstart
 
@@ -24,30 +24,32 @@ You can also run this example using Cloud Shell. To begin, login to the GCP cons
 1. Run the infrastructure deployment: `./deploy-infra.sh`, this will take 5-10mins
 1. Run the pipeline deployment: `./run-app.sh`, this will take 5mins
 
+This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
+
 ## Problem Domain 
 
 The Relative Strength Index, or RSI, is a popular financial technical indicator that measures the magnitude of recent price changes to evaluate whether an asset is currently overbought or oversold.
 
-The rule of thumb regarding RSI is:
-When RSI for an asset is less than 30, traders should buy this asset as the price is expected to increase in the near future.
-When RSI for an asset is greater than 70, traders should sell this asset as the price is expected to decrease in the near future.
+To detect when RSI is reliable or not for a given asset, the modelling approach is as follows. We train an anomaly detection model to learn the expected behaviour of metrics describing the asset when RSI is greater than 70 or RSI is less than 30. When an anomaly is detected, the model is informing that these input metrics are behaving differently to how they usually behave when RSI is greater than 70 or RSI is less than 30. And so in these instances, RSI is not reliable and a trade is not advised. If no anomaly is detected, then the metrics are behaving as expected, so you can trust RSI and make a trade. _NOTE_
 
-As this is a rule of thumb, this strategy cannot be trusted to work favourably at all times. Therefore in these instances (i.e. RSI > 70 or RSI < 30), it would be useful to know if RSI is a reliable indicator to inform a trade or not.
+> _This blog contains general advice only. It was prepared without taking into account your objectives, financial situation, or needs. You should speak to a financial planner before making a financial decision, and you should speak to a licensed ML practitioner before making an ML decision._
 
-We propose, for a given asset, that RSI is a reliable indicator when metrics describing the same asset (e.g. log returns) are behaving as they usually do when RSI > 70 or RSI < 30. And therefore, RSI is unreliable to inform a trade when these metrics are behaving anomalously.
-
-To detect when RSI is reliable or not for a given asset, the modelling approach is as follows. We train an anomaly detection model to learn the expected behaviour of metrics describing the asset when RSI > 70 or RSI < 30. When an anomaly is detected (and RSI > 70 or RSI < 30), the model is informing that these input metrics are behaving differently to how they usually behave when RSI > 70 or RSI < 30. And so in these instances, RSI is not reliable and a trade is not advised. If no anomaly is detected, then the metrics are behaving as expected when RSI > 70 or RSI < 30, so you can trust RSI and make a trade.
+More information on the problem domain, data science and model creation are in AI Notebooks which you can run yourself, or view. 
+* [Example Data Exploration](./notebooks/example_data_exploration.ipynb)
+* [Example TFX Model Training](./notebooks/example_tfx_training_pipeline.ipynb)
 
 ## Design Principles
+
 The key design principles used in the creation of this example are:
 - Keep data unobfuscated between components to ease inspection and increase flexibility
 - Ensure consistency in data by using a shared module for all transformations
 - Use managed services, minimise infrastructure management overheads
 - Ensure hermetic seal code paths between training and inference pipelines, the code in our example is shared between training and inference
 
-## Repo
+## This Repo
+
 This repo is organised into folders containing logical functions of the example. A brief description of these are below:
-- **app/bootstrap_models** is the LSTM model pre-populated with the example so that dashboards can immediately render RSI values. This model is updated by the re-training data pipeline.
+- **app/bootstrap_models** is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
 - **app/grafana** contains visualization configuration
 - **app/java** holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
 - **app/kubernetes** has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
@@ -56,20 +58,18 @@ This repo is organised into folders containing logical functions of the example.
     - pubsub to bigquery pipeline 
     - forex generator to create realistic prices
 - **docs** folder contains further example information and diagrams
-- **infra** contains the cloudbuild and terraform code to deploy the example GCP infrastructure
+- **infra** contains the cloudbuild and terraform code to deploy this example GCP infrastructure
 - **notebooks** folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
+
+Further information is available in the directory READMEs and the [docs](./docs/) directory.
 
 ## Components 
 
 This example can be thought of in two distinct, logical functions. One for real-time ingestion of prices and determination of RSI presence, and another for the re-training of the model to improve prediction.
 
-The logical diagram for the real-time flow through the GCP components is below.
+The logical diagram for the real-time and training in GCP components is below.
 
-![Real-time](docs/TSFlow-RSI-Example-Real-time.png)
-
-The logical re-training flow is in the following diagram.
-
-![Re-training](docs/TSFlow-RSI-Example-Re-training.png)
+![Logical diagram](./docs/Dataflow-FSI-Example-Logical.png)
 
 ### Storage Components
 * Three PubSub Topics: prices, metrics, and reconerr
@@ -99,5 +99,5 @@ This example is deployed in two steps:
 
 Both of these CloudBuild steps can be triggered using the `deploy-infra.sh` and `run-app.sh` scripts and require only a [gcloud](https://cloud.google.com/sdk) Google Cloud SDK to be installed locally.
 
-If needed, this example can be run using GCP Cloud Shell. Please refer to the Quickstart section for further information.
+If needed, this example can be run using GCP Cloud Shell. Please refer to the Quickstart section for further information and the README files in the [app](./app/README.md) and [infra](./infra/README.md) directories.
 
