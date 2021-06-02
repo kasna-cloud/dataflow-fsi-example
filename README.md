@@ -2,7 +2,7 @@
 
 This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This is achieved using realistic foreign exchange market data and leverages Google Cloud Platform and the Dataflow time-series sample library. 
 
-![Dashboards](docs/TSFlow-RSI-Example-Dashboards.png)
+![Dashboards](docs/Dataflow-FSI-Example-Dashboards.png)
 
 The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
@@ -10,7 +10,7 @@ This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kub
 
 ## Quickstart
 
-**On a laptop (Mac or Linux or WSL)**
+### On a laptop (Mac or Linux or WSL)
 To get running quickly,
 1. Create a new project in GCP
 1. Install `gcloud` and set PROJECT_ID
@@ -18,7 +18,7 @@ To get running quickly,
 1. Run the `run-app.sh` to deploy the pipelines and model, this will take 5mins
 1. View the grafana dashboard
 
-**Run on Cloud Shell**
+### Run on Cloud Shell
 You can also run this example using Cloud Shell. To begin, login to the GCP console and select the “Activate Cloud Shell” icon in the top right of your project dashboard. Then run the following:
 1. Clone the repo: `git clone https://github.com/kasna-cloud/tsflow-rsi-example.git && cd tsflow-rsi-example`
 1. Run the infrastructure deployment: `./deploy-infra.sh`, this will take 5-10mins
@@ -38,28 +38,36 @@ More information on the problem domain, data science and model creation are in A
 * [Example Data Exploration](./notebooks/example_data_exploration.ipynb)
 * [Example TFX Model Training](./notebooks/example_tfx_training_pipeline.ipynb)
 
-## Design Principles
-
-The key design principles used in the creation of this example are:
-- Keep data unobfuscated between components to ease inspection and increase flexibility
-- Ensure consistency in data by using a shared module for all transformations
-- Use managed services, minimise infrastructure management overheads
-- Ensure hermetic seal code paths between training and inference pipelines, the code in our example is shared between training and inference
-
-## This Repo
+## Repo Layout
 
 This repo is organised into folders containing logical functions of the example. A brief description of these are below:
-- **app/bootstrap_models** is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
-- **app/grafana** contains visualization configuration
-- **app/java** holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
-- **app/kubernetes** has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
-- **app/python** is a containerized python program for:
+
+### app/bootstrap_models
+This is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
+
+### app/grafana
+This directory contains visualization configuration used in the grafana dashboards.
+
+### app/java
+This holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
+
+### app/kubernetes
+This directory has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
+
+### app/python
+This is a containerized python program for:
     - inference and retraining pipelines
     - pubsub to bigquery pipeline 
     - forex generator to create realistic prices
-- **docs** folder contains further example information and diagrams
-- **infra** contains the cloudbuild and terraform code to deploy this example GCP infrastructure
-- **notebooks** folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
+
+### docs
+This folder contains further example information and diagrams
+
+### infra
+Contains the cloudbuild and terraform code to deploy this example GCP infrastructure
+
+### notebooks
+This folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
 
 Further information is available in the directory READMEs and the [docs](./docs/) directory.
 
