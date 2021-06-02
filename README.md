@@ -1,22 +1,24 @@
 # Dataflow Financial Services Time-Series Example
 
-This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This is achieved using realistic foreign exchange market data and leverages Google Cloud Platform and the Dataflow time-series sample library. 
+This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This example will show how to implement a RSI model using realistic foreign exchange market data, Google Cloud Platform and the Dataflow time-series sample library. 
 
 ![Dashboards](docs/Dataflow-FSI-Example-Dashboards.png)
 
 ## Table of content
 
 - [Quickstart](#quickstart)
-    - [Install](#run-locally))
+    - [Install](#run-locally)
     - [Cloud Shell](#run-on-cloud-shell)
 - [Problem Domain](#problem-domain)
 - [Repo Layout](#repo-layout)
+- [Components](#components)
+- [Deployment](#deployment)
 - [License](#license)
 - [Links](#links)
 
-The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
+The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
-This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
+The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
 
 ## Quickstart
 
@@ -52,8 +54,6 @@ You can also run this example using Cloud Shell. To begin, login to the GCP cons
 
 1. View the grafana dashboard. The username and password is your PROJECT_ID and the location is found in the Cloud Console and output in the build log.
 
-This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
-
 ## Problem Domain 
 
 The Relative Strength Index, or RSI, is a popular financial technical indicator that measures the magnitude of recent price changes to evaluate whether an asset is currently overbought or oversold.
@@ -79,9 +79,9 @@ This repo is organised into folders containing logical functions of the example.
         * inference and retraining pipelines
         * pubsub to bigquery pipeline 
         * forex generator to create realistic prices
-    * [docs](./docs) This folder contains further example information and diagrams
-    * [infra](./infra/README.md) Contains the cloudbuild and terraform code to deploy this example GCP infrastructure.
-    * [notebooks](./notebooks) This folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective. 
+* [docs](./docs) This folder contains further example information and diagrams
+* [infra](./infra/README.md) Contains the cloudbuild and terraform code to deploy this example GCP infrastructure.
+* [notebooks](./notebooks) This folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective. 
 
 Further information is available in the directory READMEs and the [docs](./docs/) directory.
 
@@ -94,8 +94,11 @@ The logical diagram for the real-time and training in GCP components is below.
 ![Logical diagram](./docs/Dataflow-FSI-Example-Logical.png)
 
 ### Storage Components
-* Three PubSub Topics: prices, metrics, and reconerr
-* One BigQuery Dataset with 3 Tables: 
+* Three PubSub Topics: 
+    * prices
+    * metrics
+    * reconerr
+* One BigQuery Dataset with 3 Tables, schema defined in [table_schemas](./infra/table_schemas):
     * prices
     * metrics
     * reconerr
@@ -115,13 +118,18 @@ The logical diagram for the real-time and training in GCP components is below.
     * Re-training pipeline created dynamically by TFX when the GKE cronjob is run (every hour)
 
 ### Deployment
-This example is deployed in two steps:
+This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
+
+Deployment of this example is done in two steps:
 1. infrastructure into GCP by CloudBuild and terraform
 2. application and pipeline deployment using CloudBuild
 
 Both of these CloudBuild steps can be triggered using the `deploy-infra.sh` and `run-app.sh` scripts and require only a [gcloud](https://cloud.google.com/sdk) Google Cloud SDK to be installed locally.
 
-If needed, this example can be run using GCP Cloud Shell. Please refer to the Quickstart section for further information and the README files in the [app](./app/README.md) and [infra](./infra/README.md) directories.
+To install this example repo into your Google Cloud project, follow the instructions in the [Quickstart](#quickstart) section.
+If needed, this example can be run using GCP Cloud Shell. 
+
+Further information is available in the [app](./app/README.md) and [infra](./infra/README.md) directories.
 
 ## License
 This code is [licensed](./LICENSE) under the terms of the MIT license and is available for free.

@@ -4,9 +4,8 @@ This document describes the data flows for this project. There are three primary
 2. Real-time inference and dashboards
 3. Model re-training
 
-![Infra and Real-time Flows](./Dataflow-FSI-Example-Real-time.png)
-
 ## Infrastructure Deployment
+![Infra and Real-time Flows](./Dataflow-FSI-Example-Real-time.png)
 1. A user logs into the GCP Console and creates a new project. Alternatively, an existing project can be used.
 2. The user sets their PROJECT_ID to the new project and executes the `../deploy-infra.sh` and `../run-app.sh` scripts.
 3. This step does a couple of things:
@@ -27,9 +26,8 @@ This document describes the data flows for this project. There are three primary
 14. The user will login to the Grafana service which is running on the GKE cluster and view the example dashboards.
 15. Grafana dashboards will pull prices, metrics and RSI information from BigQuery. 
 
-![Training](./Dataflow-FSI-Example-Re-training.png)
-
 ## Re-Training
+![Training](./Dataflow-FSI-Example-Re-training.png)
 On a regular interval, the LTSM TFX model is re-trained and stored in the GCP AI Platform service.
 1. A Kubernetes cronjob triggers on the hour to retrain the model, [deployment](../app/kubernetes/training-cronjob.yaml). The dataflow [pipeline](../app/python/src/pipelines/training.py) orchestrates the model re-training.
 2. The TFX model metadata must be stored in a reliable storage mechanism and we use CloudSQL for this. A CloudSQL Proxy service runs as a side-car to the cronjob to handle authentication and access by Dataflow to the CloudSQL. 
