@@ -27,31 +27,21 @@ The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery
 To install:
 1. Create a new project in GCP
 1. Install `gcloud` and set PROJECT_ID
-1. Execute this script to create base infrastructure. _This will take about 5-10mins_
-
+1. Execute this script to create base infrastructure. _This will take about 5-10mins_  
 `./deploy-infra.sh`
-
-1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_
-
+1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_  
 `./run-app.sh`
-
 1. View the grafana dashboard. The username and password is your PROJECT_ID and the location is found in the Cloud Console and output in the build log.
 
 ### Run on Cloud Shell
 
 You can also run this example using Cloud Shell. To begin, login to the GCP console and select the “Activate Cloud Shell” icon in the top right of your project dashboard. Then run the following:
-1. Clone the repo: 
-
+1. Clone the repo:  
 `git clone https://github.com/kasna-cloud/dataflow-fsi-example.git && cd dataflow-fsi-example`
-
-1. Execute this script to create base infrastructure. _This will take about 5-10mins_
-
+1. Execute this script to create base infrastructure. _This will take about 5-10mins_  
 `./deploy-infra.sh` 
-
-1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_
-
+1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_  
 `./run-app.sh`
-
 1. View the grafana dashboard. The username and password is your PROJECT_ID and the location is found in the Cloud Console and output in the build log.
 
 ## Problem Domain 
