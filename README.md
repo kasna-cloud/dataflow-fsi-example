@@ -4,25 +4,53 @@ This project is an example of how to detect anomalies in financial, technical in
 
 ![Dashboards](docs/Dataflow-FSI-Example-Dashboards.png)
 
+## Table of content
+
+- [Quickstart](#quickstart)
+    - [Install](#run-locally))
+    - [Cloud Shell](#run-on-cloud-shell)
+- [Problem Domain](#problem-domain)
+- [Repo Layout](#repo-layout)
+- [License](#license)
+- [Links](#links)
+
 The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to perform data engineering and generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
 This example uses GCP infrastructure, including Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
 
 ## Quickstart
 
-### On a laptop (Mac or Linux or WSL)
-To get running quickly,
+### Run Locally
+
+To install:
 1. Create a new project in GCP
 1. Install `gcloud` and set PROJECT_ID
-1. Run the `deploy-infra.sh` to create base infrastructure, this will take 5-10mins
-1. Run the `run-app.sh` to deploy the pipelines and model, this will take 5mins
-1. View the grafana dashboard
+1. Execute this script to create base infrastructure. _This will take about 5-10mins_
+
+`./deploy-infra.sh`
+
+1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_
+
+`./run-app.sh`
+
+1. View the grafana dashboard. The username and password is your PROJECT_ID and the location is found in the Cloud Console and output in the build log.
 
 ### Run on Cloud Shell
+
 You can also run this example using Cloud Shell. To begin, login to the GCP console and select the “Activate Cloud Shell” icon in the top right of your project dashboard. Then run the following:
-1. Clone the repo: `git clone https://github.com/kasna-cloud/tsflow-rsi-example.git && cd tsflow-rsi-example`
-1. Run the infrastructure deployment: `./deploy-infra.sh`, this will take 5-10mins
-1. Run the pipeline deployment: `./run-app.sh`, this will take 5mins
+1. Clone the repo: 
+
+`git clone https://github.com/kasna-cloud/dataflow-fsi-example.git && cd dataflow-fsi-example`
+
+1. Execute this script to create base infrastructure. _This will take about 5-10mins_
+
+`./deploy-infra.sh` 
+
+1. After this has completed, deploy the pipelines and model by executing the run-app script. _This will take about 5mins_
+
+`./run-app.sh`
+
+1. View the grafana dashboard. The username and password is your PROJECT_ID and the location is found in the Cloud Console and output in the build log.
 
 This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
 
@@ -42,32 +70,18 @@ More information on the problem domain, data science and model creation are in A
 
 This repo is organised into folders containing logical functions of the example. A brief description of these are below:
 
-### app/bootstrap_models
-This is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
-
-### app/grafana
-This directory contains visualization configuration used in the grafana dashboards.
-
-### app/java
-This holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
-
-### app/kubernetes
-This directory has deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
-
-### app/python
-This is a containerized python program for:
-    - inference and retraining pipelines
-    - pubsub to bigquery pipeline 
-    - forex generator to create realistic prices
-
-### docs
-This folder contains further example information and diagrams
-
-### infra
-Contains the cloudbuild and terraform code to deploy this example GCP infrastructure
-
-### notebooks
-This folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective 
+* [app](./app/README.md)
+    * [app/bootstrap_models](./app/bootstrap_models) This is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
+    * [app/grafana](./app/grafana) Contains visualization configuration used in the grafana dashboards.
+    * [app/java](./app/java) This holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
+    * [app/kubernetes](./app/kubernetes) Directory of deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
+    * [app/python](./app/python) This is a containerized python program for:
+        * inference and retraining pipelines
+        * pubsub to bigquery pipeline 
+        * forex generator to create realistic prices
+    * [docs](./docs) This folder contains further example information and diagrams
+    * [infra](./infra/README.md) Contains the cloudbuild and terraform code to deploy this example GCP infrastructure.
+    * [notebooks](./notebooks) This folder has detailed AI Notebooks which step through the RSI use case from a Data Science perspective. 
 
 Further information is available in the directory READMEs and the [docs](./docs/) directory.
 
@@ -108,4 +122,16 @@ This example is deployed in two steps:
 Both of these CloudBuild steps can be triggered using the `deploy-infra.sh` and `run-app.sh` scripts and require only a [gcloud](https://cloud.google.com/sdk) Google Cloud SDK to be installed locally.
 
 If needed, this example can be run using GCP Cloud Shell. Please refer to the Quickstart section for further information and the README files in the [app](./app/README.md) and [infra](./infra/README.md) directories.
+
+## License
+This code is [licensed](./LICENSE) under the terms of the MIT license and is available for free.
+
+## Links
+This repo has been built with the support of Google, [Kasna](http://www.kasna.com.au) and [Eliiza](http://www.eliiza.com.au). Links the relevant doco, libraries and resources are below:
+
+* [Relative Strength Index](https://www.investopedia.com/terms/r/rsi.asp)
+* [Dataflow time-series sample library](https://github.com/GoogleCloudPlatform/dataflow-sample-applications/tree/master/timeseries-streaming)
+* [Kasna](http://www.kasna.com.au/about)
+* [Eliiza](http://www.eliiza.com.au/about)
+
 
