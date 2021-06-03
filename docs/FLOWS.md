@@ -4,16 +4,22 @@ This document describes the data flows for this project. There are three primary
 2. Real-time inference and dashboards
 3. Model re-training
 
-## Infrastructure Deployment
+## Infrastructure and App Deployment
+
+This example is designed to be run in a fresh GCP project and requires at least `Owner` privileges to the project. All further IAM permissions are set by Cloud Build or Terraform.
+
+The steps for this deployment are:
 1. A user logs into the GCP Console and creates a new project. Alternatively, an existing project can be used.
 2. The user sets their PROJECT_ID to the new project and executes the `../deploy-infra.sh` and `../run-app.sh` scripts.
-3. This step does a couple of things:
+3. The script execution performs infrastructure and application build jobs using Cloud Build. These are summarised here: 
     - The deploy infra script will trigger a CloudBuild job which then executes Terraform to build the base infrastructure. Details are available in the [infra readme](../infra/README.md). 
-    - The user will also run the app which sets up the real-time pipelines and training job. More information on this step is available in the [app readme](../app/README.md).
+    - After the infra deployment is successful, the user will run the app-run script which sets up the real-time pipelines and training job. More information on this step is available in the [app readme](../app/README.md).
 
 ![Infra and Real-time Flows](./Dataflow-FSI-Example-Real-time.png)
 
 ## Real-time 
+
+The real-time price, metrics and inference pipelines will run automatically after deployment and are designed to run continuously to generate better models and dashboard data. The component and data flows for the run time of this example are:
 
 4. Once the infrastructure and app are running, the FOREXGenerator will begin generating prices. This code is [here](../app/python/src/forexgenerator/forexgenerator.py). The FOREXGenerator will produce prices into the `prices` Pub/Sub Topic.
 5. The prices stream is read by the `pubsubs-to-bigquery` dataflow job and inserted into BigQuery. [pubsubs-to-bigquery](../app/python/src/pipelines/pubsub_to_bigquery.py)

@@ -48,11 +48,11 @@ You can also run this example using Cloud Shell. To begin, login to the GCP cons
 
 The Relative Strength Index, or RSI, is a popular financial technical indicator that measures the magnitude of recent price changes to evaluate whether an asset is currently overbought or oversold.
 
-To detect when RSI is reliable or not for a given asset, the modelling approach is as follows. We train an anomaly detection model to learn the expected behaviour of metrics describing the asset when RSI is greater than 70 or RSI is less than 30. When an anomaly is detected, the model is informing that these input metrics are behaving differently to how they usually behave when RSI is greater than 70 or RSI is less than 30. And so in these instances, RSI is not reliable and a trade is not advised. If no anomaly is detected, then the metrics are behaving as expected, so you can trust RSI and make a trade. _NOTE_
+To detect when RSI is reliable or not for a given asset, the modelling approach is as follows. We train an anomaly detection model to learn the expected behaviour of metrics describing the asset when RSI is greater than 70 or RSI is less than 30. When an anomaly is detected, the model is informing that these input metrics are behaving differently to how they usually behave when RSI is greater than 70 or RSI is less than 30. And so in these instances, RSI is not reliable and a trade is not advised. If no anomaly is detected, then the metrics are behaving as expected, so you can trust RSI and make a trade. _NOTE:_
 
 > _This blog contains general advice only. It was prepared without taking into account your objectives, financial situation, or needs. You should speak to a financial planner before making a financial decision, and you should speak to a licensed ML practitioner before making an ML decision._
 
-More information on the problem domain, data science and model creation are in AI Notebooks which you can run yourself, or view. 
+A deep-dive on the problem domain, data science and model creation are in Jupyter notebooks which you can run yourself, or view right here on github:
 * [Example Data Exploration](./notebooks/example_data_exploration.ipynb)
 * [Example TFX Model Training](./notebooks/example_tfx_training_pipeline.ipynb)
 
@@ -63,9 +63,9 @@ This repo is organised into folders containing logical functions of the example.
 * [app](./app/README.md)
     * [app/bootstrap_models](./app/bootstrap_models) This is the LSTM TFX model pre-populated with the RSI example so that dashboards can immediately render RSI values. During the `run-app.sh` deployment of components, this model will be uploaded into GCS and a new Cloud Machine Learning model version will be created for the `inference` pipeline to use. This model is then updated by the re-training data pipeline.
     * [app/grafana](./app/grafana) Contains visualization configuration used in the grafana dashboards.
-    * [app/java](./app/java) This holds the Dataflow pipeline code using the Dataflow samples library. This pipeline creates metrics from the prices stream.
+    * [app/java](./app/java) This directory holds the Dataflow pipeline code using the Dataflow samples library. The pipeline creates metrics from the prices stream.
     * [app/kubernetes](./app/kubernetes) Directory of deployment manifests for starting the Dataflow pipelines, prices generator and retraining job.
-    * [app/python](./app/python) This is a containerized python program for:
+    * [app/python](./app/python) This directory contains a containerized python program for:
         * inference and retraining pipelines
         * pubsub to bigquery pipeline 
         * forex generator to create realistic prices
@@ -79,11 +79,14 @@ Further information is available in the directory READMEs and the [docs](./docs/
 
 This example can be thought of in two distinct, logical functions. One for real-time ingestion of prices and determination of RSI presence, and another for the re-training of the model to improve prediction.
 
-The logical diagram for the real-time and training in GCP components is below.
+The logical diagram for the real-time and training in GCP components is here:
 
 ![Logical diagram](./docs/Dataflow-FSI-Example-Logical.png)
 
+A detailed list of the components and data flows can be found in the [FLOWS](./docs/FLOWS.md) doc.
+
 ### Storage Components
+
 * Three PubSub Topics: 
     * prices
     * metrics
@@ -96,6 +99,7 @@ The logical diagram for the real-time and training in GCP components is below.
 * One Cloud SQL Database for ML Metadata
 
 ### Compute Components
+
 * Autopilot GKE Cluster: 
     * price generator deployment
     * grafana deployment
@@ -109,6 +113,8 @@ The logical diagram for the real-time and training in GCP components is below.
 
 ### Deployment
 This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
+
+This example is designed to be run in a fresh GCP project and requires at least `Owner` privileges to the project. All further IAM permissions are set by Cloud Build or Terraform.
 
 Deployment of this example is done in two steps:
 1. infrastructure into GCP by CloudBuild and terraform
