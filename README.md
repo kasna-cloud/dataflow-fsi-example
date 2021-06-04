@@ -21,11 +21,11 @@ The Dataflow samples library is a fast, flexible library for processing time-ser
 
 The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/assets/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
 
-A great place to start is run this example in GCP and view the excellent [blog](./docs/BLOG.md) for a detailed walk-through of the solution.
+A great place to start is to [run this example](#run-locally) in GCP and view the excellent [blog](./docs/BLOG.md) for a detailed walk-through of the solution.
 
 ## Quickstart
 
-### Run Locally
+### Run from laptop
 
 To install:
 1. Create a new project in GCP
@@ -58,6 +58,8 @@ To detect when RSI is reliable or not for a given asset, the modelling approach 
 A deep-dive on the problem domain, data science and model creation are in Jupyter notebooks which you can run yourself, or view right here on github:
 * [Example Data Exploration](./notebooks/example_data_exploration.ipynb)
 * [Example TFX Model Training](./notebooks/example_tfx_training_pipeline.ipynb)
+
+Be sure to view the [blog](./docs/BLOG.md) for a detailed walk-through of the solution.
 
 ## Repo Layout
 
