@@ -1,5 +1,22 @@
 # Detecting Machine Learned Anomalies in Real Time Foreign Exchange Data 
 
+## Table of Contents
+* [Detecting Machine Learned Anomalies in Real Time Foreign Exchange Data](#detecting-machine-learned-anomalies-in-real-time-foreign-exchange-data)
+  * [Synthesizing realistic FOREX prices using Kubernetes Engine](#synthesizing-realistic-forex-prices-using-kubernetes-engine)
+  * [Generating financial metrics using Dataflow time\-series](#generating-financial-metrics-using-dataflow-time-series)
+  * [Designing the anomaly detection model in TensorFlow Keras](#designing-the-anomaly-detection-model-in-tensorflow-keras)
+  * [Training the model in TensorFlow Extended (TFX) using Dataflow, Kubernetes Engine, and AI Platform](#training-the-model-in-tensorflow-extended-tfx-using-dataflow-kubernetes-engine-and-ai-platform)
+  * [Hosting the model on AI Platform to serve predictions in real\-time that indicate when the RSI is unreliable using Dataflow](#hosting-the-model-on-ai-platform-to-serve-predictions-in-real-time-that-indicate-when-the-rsi-is-unreliable-using-dataflow)
+  * [Creating dashboards to visualize when the RSI is unreliable using Grafana on Kubernetes Engine](#creating-dashboards-to-visualize-when-the-rsi-is-unreliable-using-grafana-on-kubernetes-engine)
+    * [Grafana Dashboard \- Live Prices of Foreign Exchange](#grafana-dashboard---live-prices-of-foreign-exchange)
+    * [Grafana Dashboard \- Gap Filling](#grafana-dashboard---gap-filling)
+    * [Grafana Dashboard \- Metrics](#grafana-dashboard---metrics)
+    * [Grafana Dashboard \- Model](#grafana-dashboard---model)
+  * [Summary](#summary)
+  * [Run this example](#run-this-example)
+    * [On a laptop (Mac or Linux or WSL)](#on-a-laptop-mac-or-linux-or-wsl)
+    * [Run on Cloud Shell](#run-on-cloud-shell)
+
 The Relative Strength Index, or RSI, is a popular financial technical indicator that measures the magnitude of recent price changes to evaluate whether an asset is currently overbought or oversold.
 
 The general approach regarding the RSI is to be used as a mean-reversion trading strategy:
@@ -48,17 +65,16 @@ One of the key illustrations in the sample library is the use of Apache Beam mod
 
 We initiate the FOREX generator as an application on Google Cloud Kubernetes Engine, which is a fully managed Kubernetes service. We publish the output to a Pub/Sub topic, which is then consumed by Dataflow time-series sample library. If you would like to explore the prices data, go to example_data_exploration.ipynb.
 
-
 ![Component Diagram](./assets/Blog_6.png)
 
-Generating financial metrics using Dataflow time-series
+## Generating financial metrics using Dataflow time-series
 
 To solve this use case, we require financial metrics that describe currency pairs, like simple moving average, log returns, and of course relative strength index. As you’re probably aware, generating many metrics like these in real-time, with a large volume of input data, is a difficult task. It is high effort, takes a lot of time, and requires a niche data engineering skill set. The time-series Dataflow samples library manages this for us simply.
 
 We deployed the samples library as a Dataflow job that consumes the output of the FOREX generator. Each data point produced by the library contains a set of metrics per currency pair. The library computes the metrics by processing the input data in sliding windows. You can configure these windows by the following variables in config.sh (their default values are also shown below, units are in seconds).
 
-__METRICS_TYPE_1_WINDOW_SECS = 1__
-__METRICS_TYPE_2_WINDOW_SECS = 300__
+* __METRICS_TYPE_1_WINDOW_SECS = 1__
+* __METRICS_TYPE_2_WINDOW_SECS = 300__
 
 The first variable (type 1 window length) determines how often a new data point of metrics is generated per currency pair, i.e. 1 new data point per second per currency pair by default. The second variable (type 2 window length) determines the length of the rolling window, i.e. metrics are calculated across 300 second windows by default. It is worth noting that increasing the type 2 window length will increase the memory requirement of the Dataflow job.
 
@@ -105,8 +121,8 @@ The use case requires us to detect anomalies in metrics that describe the behavi
 
 You can specify the currency pair to train the model and run inference for, as well as the number of timesteps in the model input (model window size) with the following variables in config.sh.
 
-__SYMBOL_TO_RUN_LSTM_ON = GBPAUD__
-__LSTM_WINDOW_LENGTH = 30__
+* __SYMBOL_TO_RUN_LSTM_ON = GBPAUD__
+* __LSTM_WINDOW_LENGTH = 30__
 
 The architecture of the LSTM autoencoder is outlined below. The model learns the expected distribution of the features by encoding their latent representation in layers lstm_4 and lstm_5, and then decoding in layers lstm_6, and lstm_7. You can see this by the change in the “Output Shape” before and after these layers.
 
