@@ -2,7 +2,7 @@
 
 This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This example will show how to implement a RSI model using realistic foreign exchange market data, Google Cloud Platform and the Dataflow time-series sample library. 
 
-![Dashboards](docs/Dataflow-FSI-Example-Dashboards.png)
+![Dashboards](docs/assets/Dataflow-FSI-Example-Dashboards.png)
 
 ## Table of content
 
@@ -18,7 +18,7 @@ This project is an example of how to detect anomalies in financial, technical in
 
 The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
-The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
+The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/assets/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
 
 ## Quickstart
 
@@ -81,7 +81,7 @@ This example can be thought of in two distinct, logical functions. One for real-
 
 The logical diagram for the real-time and training in GCP components is here:
 
-![Logical diagram](./docs/Dataflow-FSI-Example-Logical.png)
+![Logical diagram](./docs/assets/Dataflow-FSI-Example-Logical.png)
 
 A detailed list of the components and data flows can be found in the [FLOWS](./docs/FLOWS.md) doc.
 
