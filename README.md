@@ -4,8 +4,6 @@ This project is an example of how to detect anomalies in financial, technical in
 
 ![Dashboards](docs/assets/Dataflow-FSI-Example-Dashboards.png)
 
-## Table of content
-
 - [Quickstart](#quickstart)
     - [Install](#run-locally)
     - [Cloud Shell](#run-on-cloud-shell)
