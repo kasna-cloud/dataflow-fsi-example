@@ -15,7 +15,7 @@ The steps for this deployment are:
     - The deploy infra script will trigger a CloudBuild job which then executes Terraform to build the base infrastructure. Details are available in the [infra readme](../infra/README.md). 
     - After the infra deployment is successful, the user will run the app-run script which sets up the real-time pipelines and training job. More information on this step is available in the [app readme](../app/README.md).
 
-![Infra and Real-time Flows](./Dataflow-FSI-Example-Real-time.png)
+![Infra and Real-time Flows](./assets/Dataflow-FSI-Example-Real-time.png)
 
 ## Real-time 
 
@@ -38,7 +38,7 @@ The real-time price, metrics and inference pipelines will run automatically afte
 
 On a regular interval, the LTSM TFX model is re-trained and stored in the GCP AI Platform service.
 
-![Training](./Dataflow-FSI-Example-Re-training.png)
+![Training](./assets/Dataflow-FSI-Example-Re-training.png)
 
 1. A Kubernetes cronjob triggers on the hour to retrain the model, [deployment](../app/kubernetes/training-cronjob.yaml). The dataflow [pipeline](../app/python/src/pipelines/training.py) orchestrates the model re-training.
 2. The TFX model metadata must be stored in a reliable storage mechanism and we use CloudSQL for this. A CloudSQL Proxy service runs as a side-car to the cronjob to handle authentication and access by Dataflow to the CloudSQL. 

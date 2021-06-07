@@ -2,9 +2,7 @@
 
 This project is an example of how to detect anomalies in financial, technical indicators by modeling their expected distribution and thus inform when the Relative Strength Indicator (RSI) is unreliable. RSI is a popular indicator for traders of financial assets, and it can be helpful to understand when it is reliable or not. This example will show how to implement a RSI model using realistic foreign exchange market data, Google Cloud Platform and the Dataflow time-series sample library. 
 
-![Dashboards](docs/Dataflow-FSI-Example-Dashboards.png)
-
-## Table of content
+![Dashboards](docs/assets/Dataflow-FSI-Example-Dashboards.png)
 
 - [Quickstart](#quickstart)
     - [Install](#run-locally)
@@ -15,14 +13,17 @@ This project is an example of how to detect anomalies in financial, technical in
 - [Deployment](#deployment)
 - [License](#license)
 - [Links](#links)
+- [Contributing](#contributing)
 
 The Dataflow samples library is a fast, flexible library for processing time-series data -- particularly for financial market data due to its large volume. Its ability to generate useful metrics in real-time significantly reduces the time and effort to build machine learning models and solve problems in the finance domain. This library is used in the metrics generator component of this example and detailed information on it's usage can be found in [docs](/docs).
 
-The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
+The GCP infrastructure used in this example includes Dataflow, Pub/Sub, BigQuery, Kubernetes Engine, and AI Platform. Further information on [components](./docs/COMPONENTS.md), [flows](./docs/FLOWS.md) and [diagrams](./docs/assets/Dataflow-FSI-Example-Real-time.png) can be found in the [docs](./docs/) directory.
+
+A great place to start is to [run this example](#run-locally) in GCP and view the excellent [blog](./docs/BLOG.md) for a detailed walk-through of the solution.
 
 ## Quickstart
 
-### Run Locally
+### Run from laptop
 
 To install:
 1. Create a new project in GCP
@@ -56,6 +57,8 @@ A deep-dive on the problem domain, data science and model creation are in Jupyte
 * [Example Data Exploration](./notebooks/example_data_exploration.ipynb)
 * [Example TFX Model Training](./notebooks/example_tfx_training_pipeline.ipynb)
 
+Be sure to view the [blog](./docs/BLOG.md) for a detailed walk-through of the solution.
+
 ## Repo Layout
 
 This repo is organised into folders containing logical functions of the example. A brief description of these are below:
@@ -81,7 +84,7 @@ This example can be thought of in two distinct, logical functions. One for real-
 
 The logical diagram for the real-time and training in GCP components is here:
 
-![Logical diagram](./docs/Dataflow-FSI-Example-Logical.png)
+![Logical diagram](./docs/assets/Dataflow-FSI-Example-Logical.png)
 
 A detailed list of the components and data flows can be found in the [FLOWS](./docs/FLOWS.md) doc.
 
@@ -112,6 +115,7 @@ A detailed list of the components and data flows can be found in the [FLOWS](./d
     * [Re-training pipeline](./app/python/src/pipelines/training.py) created dynamically by TFX when the GKE cronjob is run (every hour)
 
 ### Deployment
+
 This repo uses java, python, cloudbuild, terraform and other technologies which require configuration. For this example we have chosen to store all configuration values in the [config.sh](./config.sh) file. You can change any values in this file to modfiy the behaviour or deployment of the example.
 
 This example is designed to be run in a fresh GCP project and requires at least `Owner` privileges to the project. All further IAM permissions are set by Cloud Build or Terraform.
@@ -128,9 +132,11 @@ If needed, this example can be run using GCP Cloud Shell.
 Further information is available in the [app](./app/README.md) and [infra](./infra/README.md) directories.
 
 ## License
+
 This code is [licensed](./LICENSE) under the terms of the MIT license and is available for free.
 
 ## Links
+
 This repo has been built with the support of Google, [Kasna](http://www.kasna.com.au) and [Eliiza](http://www.eliiza.com.au). Links the relevant doco, libraries and resources are below:
 
 * [Relative Strength Index](https://www.investopedia.com/terms/r/rsi.asp)
@@ -138,4 +144,7 @@ This repo has been built with the support of Google, [Kasna](http://www.kasna.co
 * [Kasna](http://www.kasna.com.au/about)
 * [Eliiza](http://www.eliiza.com.au/about)
 
+## Contributing
 
+The excellent contributors to this repo are listed in the [AUTHORS](./AUTHORS) file and in the git history.
+If you would like to contribute please see the [CODE-OF-CONDUCT](./docs/CODE-OF-CONDUCT.md) and [CONTRIBUTING](./docs/CONTRIBUTING.md) info.
