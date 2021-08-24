@@ -5,7 +5,8 @@
 #
 
 for i in "gcloud" "kubectl"; do
-  command -v "${i}" 2>&1 > /dev/null || { echo >&2 "${i} is not installed."; echo "${MESSAGE}"; exit 1; }
+  command -v "${i}" 2>&1 > /dev/null || { echo >&2 "${i} is not installed. Run the following command to install: 
+    gcloud components install kubectl"; echo "${MESSAGE}"; exit 1; }
 done
 
 
@@ -17,7 +18,7 @@ source config.sh
 gcloud builds submit --config "app/cloudbuild.yaml"
 
 # Open the Grafana dashboad
-gcloud container clusters get-credentials cluster --region ${REGION}
+gcloud container clusters get-credentials cluster --region ${REGION} # TODO: wait until the cluster is running before proceeding  
 unset external_ip
 while [ -z $external_ip ];
   do echo "Waiting for Grafana end point ..."
