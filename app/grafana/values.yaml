@@ -3206,6 +3206,7 @@ ingress:
   enabled: true
   hosts: []
   path: /*
+  pathType: ImplementationSpecific
 plugins:
   - https://github.com/doitintl/bigquery-grafana/archive/2.0.2.zip;doit-bigquery-datasource
 serviceAccount:
