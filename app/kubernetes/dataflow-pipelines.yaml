@@ -42,3 +42,4 @@ spec:
             - --window_length=${LSTM_WINDOW_LENGTH}
             - --rsi_lower_threshold=${RSI_LOWER_THRESHOLD}
             - --rsi_upper_threshold=${RSI_UPPER_THRESHOLD}
+            

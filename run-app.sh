@@ -18,7 +18,7 @@ source config.sh
 gcloud builds submit --config "app/cloudbuild.yaml"
 
 # Open the Grafana dashboad
-gcloud container clusters get-credentials cluster --region ${REGION} # TODO: wait until the cluster is running before proceeding  
+gcloud container clusters get-credentials cluster --region ${REGION} 
 unset external_ip
 while [ -z $external_ip ];
   do echo "Waiting for Grafana end point ..."
