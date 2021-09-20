@@ -18,7 +18,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Install beam python libraries
 RUN python3.8 -m pip install \
 	absl-py==0.12.0 \
-	apache-beam[gcp]==2.29.0 \
+	apache-beam[gcp]==2.30.0 \
 	google-cloud-pubsub==1.7.0 \
 	joblib==0.14.1 \
 	pandas==1.2.4 \
