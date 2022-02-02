@@ -13,7 +13,7 @@ This example can be thought of in two distinct, logical functions. One for real-
 
 The logical diagram for the real-time and training in GCP components is below.
 
-![Logical diagram](./docs/assets/Dataflow-FSI-Example-Logical.png)
+![Logical diagram](./assets/Dataflow-FSI-Example-Logical.png)
 
 ### Storage Components
 * Three PubSub Topics: prices, metrics, and reconerr
