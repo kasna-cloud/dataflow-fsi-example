@@ -12,6 +12,18 @@ steps:
         gcloud dataflow jobs cancel $$(gcloud dataflow jobs list --format 'value(id)' --project $${PROJECT_ID} --region $${REGION} --status active) --project $${PROJECT_ID} --region $${REGION}
         echo "Waiting for dataflow jobs to cancel..."
         while gcloud dataflow jobs list --format 'value(state)' --project $${PROJECT_ID} --region $${REGION} --status active | grep -q "Running"; do sleep 1; done
+  - id: build-python-image
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    waitFor: ["-"]
+    args:
+      - "-c"
+      - |
+        export BRANCH_NAME=${BRANCH_NAME}
+        export PROJECT_ID=${PROJECT_ID}
+        source config.sh
+        cd app/python
+        gcloud builds submit --timeout=3600s --tag gcr.io/$${PROJECT_ID}/python
   - id: setup-prereq-resources
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     entrypoint: "bash"
@@ -30,7 +42,7 @@ steps:
   - id: deploy-generator
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     entrypoint: "bash"
-    waitFor: ["setup-prereq-resources"]
+    waitFor: ["setup-prereq-resources", "build-python-image"]
     args:
       - "-c"
       - |
@@ -65,7 +77,7 @@ steps:
   - id: setup-training-cronjob
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     entrypoint: "bash"
-    waitFor: ["setup-prereq-resources"]
+    waitFor: ["setup-prereq-resources", "build-python-image"]
     args:
       - "-c"
       - |
@@ -108,7 +120,7 @@ steps:
   - id: start-dataflow-pipelines
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     entrypoint: "bash"
-    waitFor: ["setup-prereq-resources"]
+    waitFor: ["setup-prereq-resources", "build-python-image"]
     args:
       - "-c"
       - |

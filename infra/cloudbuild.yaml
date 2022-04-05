@@ -10,18 +10,6 @@ steps:
         export PROJECT_ID=${PROJECT_ID}
         source config.sh
         gsutil ls gs://$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET} || gsutil mb -p $${PROJECT_ID} gs://$${PROJECT_ID}_$${TERRAFORM_STATE_BUCKET}
-  - id: build-python-container
-    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
-    entrypoint: "bash"
-    waitFor: ["-"]
-    args:
-      - "-c"
-      - |
-        export BRANCH_NAME=${BRANCH_NAME}
-        export PROJECT_ID=${PROJECT_ID}
-        source config.sh
-        cd app/python
-        gcloud builds submit --timeout=3600s --tag gcr.io/$${PROJECT_ID}/python
   - id: terraform-init
     name: "hashicorp/terraform:latest"
     entrypoint: "sh"
