@@ -32,7 +32,8 @@ setuptools.setup(
         "jupyter_core==4.7.0",
         "jedi==0.17.1",
         "jupyter_client==6.0.0",
-        "debugpy==1.4.0"
+        "debugpy==1.4.0",
+        "markupsafe==2.0.1",
     ],
     packages=setuptools.find_packages(),
 )
