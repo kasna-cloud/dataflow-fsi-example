@@ -10,6 +10,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: start-pubsub-to-bigquery
+          imagePullPolicy: Always
           image: gcr.io/${PROJECT_ID}/python:latest
           args:
             - pubsub_to_bigquery
@@ -25,6 +26,7 @@ spec:
             - --staging_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_STAGING_FOLDER}
             - --temp_location=gs://${PROJECT_ID}_${GCS_BUCKET_NAME}/${GCS_TEMP_FOLDER}
         - name: start-inference
+          imagePullPolicy: Always
           image: gcr.io/${PROJECT_ID}/python:latest
           args:
             - inference

@@ -59,6 +59,9 @@ resource "google_container_cluster" "cluster" {
   location         = var.region
   name             = var.gke_cluster_name
   project          = var.project_id
+  
+  # WORKAROUND for https://github.com/hashicorp/terraform-provider-google/issues/10782
+  ip_allocation_policy { }
 
   depends_on = [
     google_project_service.container
@@ -241,6 +244,7 @@ resource "google_sql_database_instance" "instance" {
   region              = var.region
   name                = var.sql_database_instance_name
   project             = var.project_id
+  database_version    = "MYSQL_5_6"
 
   depends_on = [
     google_project_service.sqladmin

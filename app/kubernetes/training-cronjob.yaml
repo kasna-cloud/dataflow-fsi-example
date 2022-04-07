@@ -18,6 +18,7 @@ spec:
                 - /cloud_sql_proxy
                 - -instances=${PROJECT_ID}:${REGION}:${SQL_DATABASE_INSTANCE_NAME}=tcp:3306
             - name: trainer
+              imagePullPolicy: Always
               image: gcr.io/${PROJECT_ID}/python:latest
               args:
                 - training

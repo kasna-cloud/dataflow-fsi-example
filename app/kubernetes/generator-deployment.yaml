@@ -17,6 +17,7 @@ spec:
       serviceAccountName: ${SERVICE_ACCOUNT_DATAFLOW_ACCOUNT_ID}
       containers:
         - name: generator
+          imagePullPolicy: Always
           image: gcr.io/${PROJECT_ID}/python:latest
           args:
             - generator
